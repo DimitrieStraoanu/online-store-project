@@ -1,0 +1,26 @@
+{
+    "my_products": {
+        "-LiCkhkDBuohpkg4LSRe": {
+            "desc": "Made from eco-friendly materials.",
+            "name": "T-shirt",
+            "pic": "https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1550688238-theory-1550688225.jpg",
+            "price": 300,
+            "stock": 3
+        },
+        "-LiCku2PLuCYKolywhwc": {
+            "desc": "Fast shoes for fast people",
+            "name": "Sport shoes",
+            "pic": "https://www.papucescu.ro/media/catalog/product/cache/10f519365b01716ddb90abc57de5a837/p/a/pantofi-sport-barbati-13600-20-black-4.jpg",
+            "price": 500,
+            "stock": 10
+        },
+        "-LiCkuRHoxiH7QJCL40d": {
+            "desc": "Composition 100% natural leather",
+            "name": "Leather jacket",
+            "pic": "https://s12emagst.akamaized.net/products/14016/14015920/images/res_4e65ec839809b61187e8c8ef0b3d1752_350x350_100_bh8a.jpg",
+            "price": 600,
+            "stock": 5
+        }
+        
+    }
+}
