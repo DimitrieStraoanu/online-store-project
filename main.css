@@ -18,21 +18,42 @@ img {
 
 
 table {
+    margin-top: 16px;
+    margin-bottom: 16px;
     text-align: center;
     border-collapse: collapse;
     width: 100%;
 }
 
 tr {
+    border-top: 1px solid lightgray;
+}
+
+tr:last-of-type {
     border-bottom: 1px solid lightgray;
+}
+
+thead tr {
+    border: none;
 }
 
 td {
     padding: 5px;
+    vertical-align: top;
+
 }
 
 button {
     cursor: pointer;
+}
+
+input {
+    width: 100%;
+}
+
+textarea {
+    width: 100%;
+    height: 100px;
 }
 
 #mainContainer {
@@ -43,9 +64,22 @@ button {
     justify-content: space-evenly;
 }
 
+#helper {
+    color: red;
+    text-align: center;
+}
+
+.centered {
+    width: 100%;
+    text-align: center;
+}
+
+.left {
+    text-align: left;
+}
+
 .expired {
     text-align: center;
-
 }
 
 .qtyInput {
@@ -88,6 +122,8 @@ button {
     text-align: center;
     border: 1px solid black;
     padding: 10px;
+    margin-bottom: 16px;
+
 }
 
 .cartDetails {

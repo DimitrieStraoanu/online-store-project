@@ -5,7 +5,7 @@
             "name": "T-shirt",
             "pic": "https://hips.hearstapps.com/vader-prod.s3.amazonaws.com/1550688238-theory-1550688225.jpg",
             "price": 300,
-            "stock": 3
+            "stock": 5
         },
         "-LiCku2PLuCYKolywhwc": {
             "desc": "Fast shoes for fast people",
@@ -20,7 +20,27 @@
             "pic": "https://s12emagst.akamaized.net/products/14016/14015920/images/res_4e65ec839809b61187e8c8ef0b3d1752_350x350_100_bh8a.jpg",
             "price": 600,
             "stock": 5
+        },
+        "-LimonBqexo0EyXVH4Qv": {
+            "desc": "Vintage Levi's 550 relaxed fit jeans with light distressing throughout and classic 5-pocket construction.",
+            "name": "Blue Jeans",
+            "pic": "https://cdn.shopify.com/s/files/1/1735/5687/products/levis-blue-baggy-3.png?v=1490911974",
+            "price": 200,
+            "stock": 10
+        },
+        "-LimpTbcxBABlfAly_AN": {
+            "desc": "Fan Favorite - MLB Basic Cap, New York Yankees",
+            "name": "Cap/Hat",
+            "pic": "https://i5.walmartimages.com/asr/5145b2a0-d651-4e6f-93bc-82d6231a69ad_1.e24f04f5aac30d74385f92746b06c5b7.jpeg",
+            "price": 100,
+            "stock": 5
+        },
+        "-LimqA9KdSYXnwzS8kdg": {
+            "desc": "Just flip open the reversible buckle, match the length to your favorite belt and cut the end that goes back into the buckle.",
+            "name": "Belt",
+            "pic": "https://www.crossbreedholsters.com/pub/media/catalog/product/cache/image/768x550/beff4985b56e3afdbeabfc89641a4582/c/r/crossoverbelt_flatblack_black_1536x1100.png",
+            "price": 100,
+            "stock": 5
         }
-        
     }
 }

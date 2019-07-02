@@ -1,5 +1,5 @@
 let url = new URL(document.URL);
-let id = url.searchParams.get('id');
+let key = url.searchParams.get('key');
 let sufficientStock;
 let product;
 let cart;
@@ -11,9 +11,22 @@ getProductData()
     })
     .then(function (data) {
         product = data;
-        draw();
-        addListeners();
+        if (product) {
+            if (cart[key]) {
+                cart[key] = {
+                    ...cart[key],
+                    ...product
+                };
+            }
+            draw();
+            addListeners();
+        } else {
+            document.querySelector('#mainContainer').innerHTML = 'Product not available!';
+        }
     })
+    .catch(function (err) {
+        console.log(err)
+    });
 
 document.querySelector('#cartBtn').addEventListener('click', function () {
     location.assign('./cart.html');
@@ -37,7 +50,7 @@ function addListeners() {
     });
     document.querySelector('.increaseBtn').addEventListener('click', function () {
         let qty = Number(document.querySelector('.qtyInput').value);
-        let cartQty = (cart[id]) ? cart[id].qty : 0;
+        let cartQty = (cart[key]) ? cart[key].qty : 0;
         if (product.stock > (cartQty + qty)) {
             qty++;
             document.querySelector('.qtyInput').value = qty;
@@ -69,7 +82,7 @@ function popup() {
 }
 
 function getProductData() {
-    return fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/${id}.json`, {
+    return fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/${key}.json`, {
         method: 'GET'
     });
 }
@@ -83,14 +96,14 @@ function initCart() {
 
 function addToCart() {
     let qty = Number(document.querySelector('.qtyInput').value);
-    let cartQty = (cart[id]) ? cart[id].qty : 0;
+    let cartQty = (cart[key]) ? cart[key].qty : 0;
     if (product.stock >= (cartQty + qty)) {
         sufficientStock = true;
-        if (cart[id])
-            cart[id].qty += qty;
+        if (cart[key])
+            cart[key].qty += qty;
         else {
             product.qty = qty;
-            cart[id] = product;
+            cart[key] = product;
         }
         localStorage.setItem('cart', JSON.stringify(cart));
     } else {
@@ -107,15 +120,24 @@ function draw() {
                 <p><b>${product.name}</b></p>
                 <p>${product.desc}</p>
                 <p>Price: ${product.price} euro</p>
-                <p>Stock: ${(product.stock<=0)?0:product.stock} pcs</p>
+                <p>Stock: ${product.stock} pcs</p>
         `;
-    if (cart[id] && product.stock === cart[id].qty)
+    if (cart[key] && product.stock === cart[key].qty)
         html += `
             <button class ="decreaseBtn" disabled>-</button>
             <input class ="qtyInput" type="text" disabled>
             <button class ="increaseBtn" disabled>+</button>
             <button id="addBtn" disabled>Add to cart</button>
             <h3>Max quantity available already in cart!</h3>
+        </div>
+        `;
+    else if (cart[key] && product.stock > cart[key].qty)
+        html += `
+            <button class ="decreaseBtn">-</button>
+            <input class ="qtyInput" type="text" value="1" disabled>
+            <button class ="increaseBtn">+</button>
+            <button id="addBtn">Add to cart</button>
+            <h3>${cart[key].qty} pcs in cart!</h3>
         </div>
         `;
     else if (product.stock > 0) {
@@ -126,7 +148,7 @@ function draw() {
             <button id="addBtn">Add to cart</button>
         </div>    
         `;
-    } else
+    } else if (product.stock <= 0)
         html += `
             <h3>Product out of stock!</h3>
             <button class ="decreaseBtn" disabled>-</button>

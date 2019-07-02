@@ -1,7 +1,5 @@
 let database;
-
-document.querySelector('#mainContainer').innerHTML = '<img src="./assets/loading.gif">';
-
+showLoading();
 getDatabase()
     .then(function (response) {
         if (response.status === 200)
@@ -11,12 +9,10 @@ getDatabase()
     })
     .then(function (data) {
         database = data;
-        draw(database);
+        draw();
         addListeners();
     })
-    .catch(function (err) {
-        console.log(err)
-    });
+    .catch();
 
 document.querySelector('#cartBtn').addEventListener('click', function () {
     location.assign('./pages/cart.html');
@@ -32,18 +28,18 @@ function getDatabase() {
     });
 }
 
-function draw(obj) {
+function draw() {
     document.querySelector('#mainContainer').innerHTML = '';
     let html = '';
-    for (let key in obj) {
+    for (let key in database) {
         html += `
             <div class="product">
                 <div class="pic">
-                    <img src="${obj[key].pic}">
+                    <img src="${database[key].pic}">
                 </div>
-                <p><b>${obj[key].name}</b></p>
-                <span>${obj[key].price} euro</span>
-                <button class="detailsBtn" data-id="${key}">Details</button>
+                <p><b>${database[key].name}</b></p>
+                <span>${database[key].price} euro</span>
+                <button class="detailsBtn" data-key="${key}">Details</button>
             </div>    
         `;
     }
@@ -53,10 +49,14 @@ function draw(obj) {
 function addListeners() {
     let buttons = document.querySelectorAll('.detailsBtn');
     for (let element of buttons) {
-        element.addEventListener('click', function () {
-            location.assign(`./pages/details.html?id=${element.dataset.id}`);
+        element.addEventListener('click', function(){
+            location.assign(`./pages/details.html?key=${element.dataset.key}`);
         });
     }
+}
+
+function showLoading() {
+    document.querySelector('#mainContainer').innerHTML = '<img src="../assets/loading.gif">';
 }
 
 class Product {
