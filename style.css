@@ -1,0 +1,36 @@
+#upBtn {
+    position: fixed;
+    bottom: 16px;
+    right: 50%;
+    transform: translateX(50%);
+    z-index: 1000;
+}
+
+#logo {
+    cursor: pointer;
+}
+
+.bg-white-50 {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+.loading {
+    height: 500px;
+}
+
+.popup {
+    position: fixed;
+    bottom: 3em;
+    right: 50%;
+    transform: translateX(50%);
+    z-index: 1000;
+    padding: 2em;
+}
+
+input[type="text"],
+textarea,
+button {
+    outline: none;
+    box-shadow: none !important;
+    border: 1px solid #ccc !important;
+}

@@ -69,7 +69,7 @@ function addListeners() {
     document.querySelector('#storeBtn').addEventListener('click', function () {
         location.assign('../index.html');
     });
-    
+
 }
 
 function addProduct() {
@@ -78,7 +78,7 @@ function addProduct() {
 }
 
 function editProduct() {
-    let key = (addMode)?'':this.dataset.key;
+    let key = (addMode) ? '' : this.dataset.key;
     let html = `
     <div class="centered">
         <table class="left">
@@ -97,6 +97,17 @@ function editProduct() {
             <tr>
                 <td>Description:</td><td><textarea id="desc">${(addMode)?'':database[key].desc}</textarea></td>
             </tr>
+            <tr>
+                <td>Tags:</td><td><textarea id="tags">${(addMode)?'':database[key].tags}</textarea></td>
+            </tr>
+            <tr>
+                <td>Category:</td>
+                <td><select id="cat">
+                <option value="clothing" ${(!addMode && database[key].cat === 'clothing')?'selected':''}>Clothing</option>
+                <option value="footwear" ${(!addMode && database[key].cat === 'footwear')?'selected':''}>Footwear</option>
+                <option value="accessories" ${(!addMode && database[key].cat === 'accessories')?'selected':''}>Accessories</option>
+                </select></td>
+            </tr>
         </table>
         <button id="saveBtn">Save</button>
         <button id="cancelBtn">Cancel</button>
@@ -109,7 +120,9 @@ function editProduct() {
             pic: document.querySelector('#pic').value,
             price: Number(document.querySelector('#price').value),
             stock: Number(document.querySelector('#stock').value),
-            desc: document.querySelector('#desc').value
+            desc: document.querySelector('#desc').value,
+            tags: document.querySelector('#tags').value,
+            cat: document.querySelector('#cat').value
         };
         showLoading();
         fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/${(addMode)?'':key}.json`, {
