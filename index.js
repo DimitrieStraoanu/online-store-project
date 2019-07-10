@@ -1,6 +1,8 @@
 let products = {};
-renderHeader();
+let cart;
 initCart();
+renderHeader();
+showCartInfo();
 showLoading();
 getProducts()
     .then(function (response) {
@@ -11,6 +13,7 @@ getProducts()
     })
     .then(function (data) {
         products = data;
+        syncCart();
         clearLoading();
         renderCarousel();
         renderProducts(products);
@@ -21,12 +24,6 @@ getProducts()
     .catch(function (err) {
         console.log(err);
     });
-
-function getProducts() {
-    return fetch('https://my-online-store-2bdc4.firebaseio.com/my_products/.json', {
-        method: 'GET',
-    });
-}
 
 function checkSearchParams() {
     let url = new URL(document.URL);
@@ -39,11 +36,43 @@ function checkSearchParams() {
     }
 }
 
+function searchClicked() {
+    let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
+    if (searchString) {
+        renderProducts(findProducts(searchString));
+        addListeners('products');
+        document.querySelector('#searchInput').value = '';
+        scroll();
+    }
+}
+
+function getProducts() {
+    return fetch('https://my-online-store-2bdc4.firebaseio.com/my_products/.json', {
+        method: 'GET',
+    });
+}
+
 function initCart() {
-    if (localStorage.getItem('cart'))
-        cart = JSON.parse(localStorage.getItem('cart'));
+    cart = localStorage.getItem('cart');
+    if (cart)
+        cart = JSON.parse(cart);
     else
         cart = {};
+}
+
+function syncCart() {
+    for (let key in products) {
+        if (cart[key]) {
+            cart[key] = {
+                ...cart[key],
+                ...products[key]
+            };
+        }
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function showCartInfo() {
     if (document.getElementById('cartItems')) {
         let items = 0;
         for (let key in cart) {
@@ -247,16 +276,6 @@ function sticky() {
     } else if (distFromTop > 0) {
         document.querySelector('#nav').classList.remove('fixed-top');
         document.querySelector('#upBtn').classList.add('d-none');
-    }
-}
-
-function searchClicked() {
-    let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
-    if (searchString) {
-        renderProducts(findProducts(searchString));
-        addListeners('products');
-        document.querySelector('#searchInput').value = '';
-        scroll();
     }
 }
 

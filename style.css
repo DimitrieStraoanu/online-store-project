@@ -27,10 +27,16 @@
     padding: 2em;
 }
 
-input[type="text"],
+.my-position-absolute{
+    position: absolute;
+    top:0;
+    z-index: 10000;
+}
+
+/* input[type="text"],
 textarea,
 button {
     outline: none;
     box-shadow: none !important;
     border: 1px solid #ccc !important;
-}
+} */

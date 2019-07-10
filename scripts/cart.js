@@ -1,22 +1,67 @@
 let cart;
-let database;
+let products;
 initCart();
 renderHeader();
 addListeners('header');
-updateCartBtn();
 showLoading();
-checkStock()
-    .then(function () {
+getProducts()
+    .then(function (response) {
+        if (response.status === 200)
+            return response.json();
+        else
+            console.log(response.statusText);
+    })
+    .then(function (data) {
+        products = data;
+        syncCart();
+        updateCart();
+        showCartInfo();
         clearLoading();
-        updateCartBtn();
         renderCart();
         if (Object.keys(cart).length > 0) {
             addListeners('cartProducts');
+        } else {
+            addListeners('alert');
         }
     })
     .catch(function (err) {
         console.log(err)
     });
+
+function buttonClicked(event) {
+    if (event.target.classList.contains('increaseBtn')) {
+        let key = event.target.dataset.key;
+        if (products[key].stock > cart[key].qty) {
+            cart[key].qty++;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showCartInfo();
+            renderCart();
+            addListeners('cartProducts');
+        }
+    }
+    if (event.target.classList.contains('decreaseBtn')) {
+        let key = event.target.dataset.key;
+        if (cart[key].qty > 1) {
+            cart[key].qty--;
+            localStorage.setItem('cart', JSON.stringify(cart));
+            showCartInfo();
+            renderCart();
+            addListeners('cartProducts');
+        }
+    }
+    if (event.target.classList.contains('removeBtn')) {
+        let key = event.target.dataset.key;
+        delete cart[key];
+        localStorage.setItem('cart', JSON.stringify(cart));
+        showCartInfo();
+        renderCart();
+        if (Object.keys(cart).length > 0) {
+            addListeners('cartProducts');
+        } else {
+            addListeners('alert');
+        }
+    }
+}
 
 function initCart() {
     cart = localStorage.getItem('cart');
@@ -26,7 +71,19 @@ function initCart() {
         cart = {};
 }
 
-function updateCartBtn() {
+function syncCart() {
+    for (let key in products) {
+        if (cart[key]) {
+            cart[key] = {
+                ...cart[key],
+                ...products[key]
+            };
+        }
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function showCartInfo() {
     if (document.getElementById('cartItems')) {
         let items = 0;
         for (let key in cart) {
@@ -34,6 +91,12 @@ function updateCartBtn() {
         }
         document.getElementById('cartItems').innerHTML = items;
     }
+}
+
+function getProducts() {
+    return fetch('https://my-online-store-2bdc4.firebaseio.com/my_products/.json', {
+        method: 'GET',
+    });
 }
 
 function showLoading() {
@@ -49,39 +112,6 @@ function showLoading() {
 function clearLoading() {
     let loading = document.querySelector('.loading')
     loading.parentElement.removeChild(loading);
-}
-
-function modifyQty() {
-    if (event.target.classList.contains('increaseBtn')) {
-        let key = event.target.dataset.key;
-        if (database[key].stock > cart[key].qty) {
-            cart[key].qty++;
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartBtn();
-            renderCart();
-            addListeners('cartProducts');
-        }
-    }
-    if (event.target.classList.contains('decreaseBtn')) {
-        let key = event.target.dataset.key;
-        if (cart[key].qty > 1) {
-            cart[key].qty--;
-            localStorage.setItem('cart', JSON.stringify(cart));
-            updateCartBtn();
-            renderCart();
-            addListeners('cartProducts');
-        }
-    }
-    if (event.target.classList.contains('removeBtn')) {
-        let key = event.target.dataset.key;
-        delete cart[key];
-        localStorage.setItem('cart', JSON.stringify(cart));
-        updateCartBtn();
-        renderCart();
-        if (Object.keys(cart).length > 0) {
-            addListeners('cartProducts');
-        }
-    }
 }
 
 function renderCart() {
@@ -140,8 +170,8 @@ function renderCart() {
         <p>Taxes: 0 %</p>
         <p>Shipping: 0 euro</p>
         <p><b>Total price: ${totalPrice} euro</b></p>
-        <button id="checkoutBtn" class="btn btn-dark mx-3 mb-1">Checkout</Button>
-        <button id="storeBtn" class="btn btn-dark mx-3">Continue shopping</button>
+        <button id="storeBtn" class="btn btn-dark mx-3 mb-1">Continue shopping</button>
+        <button id="orderBtn" class="btn btn-dark mx-3">Place order</Button>
 
         </div>
         </div>
@@ -149,17 +179,14 @@ function renderCart() {
         div.innerHTML = html;
         document.body.appendChild(div);
     } else {
-        let div = document.createElement('div');
-        div.innerHTML = `
+        let alert = document.createElement('div');
+        alert.innerHTML = `
         <div class="alert alert-light text-center p-5">
         <p>Shopping cart is empty!</p>
         <button id="storeBtn" class="btn btn-dark mx-3">Continue shopping</button>
         </div>
         `;
-        document.body.appendChild(div);
-        document.querySelector('#storeBtn').addEventListener('click', function () {
-            location.assign('../index.html');
-        });
+        document.body.appendChild(alert);
     }
 }
 
@@ -180,11 +207,25 @@ function addListeners(...parameters) {
             location.assign('./admin.html');
         });
     }
+
     if (parameters.includes('cartProducts')) {
+
         document.querySelector('#storeBtn').addEventListener('click', function () {
             location.assign('../index.html');
         });
-        document.querySelector('table').addEventListener('click', modifyQty);
+
+        document.querySelector('#orderBtn').addEventListener('click', placeOrder);
+
+        document.querySelector('table').addEventListener('click', function () {
+            buttonClicked(event)
+        });
+    }
+
+    if (parameters.includes('alert')) {
+
+        document.querySelector('#storeBtn').addEventListener('click', function () {
+            location.assign('../index.html');
+        });
     }
 }
 
@@ -195,137 +236,57 @@ function searchClicked() {
     }
 }
 
-function checkStock() {
-    if (Object.keys(cart).length > 0) {
-        return new Promise(function (resolve, reject) {
-            fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/.json`)
-                .then(function (response) {
-                    if (response.status !== 200) {
-                        reject();
-                    } else
-                        return response.json();
-                })
-                .then(function (data) {
-                    database = data;
-                    let helper = document.createElement('div');
-                    helper.id = 'helper';
-                    let html = '';
-                    for (let key in cart) {
-                        if (!database[key]) {
-                            html += `<p>${cart[key].name} - Not available! Product removed from cart!</p>`;
-                            delete cart[key];
-                        } else if (database[key].stock < 1) {
-                            html += `<p>${cart[key].name} - Out of stock! Product removed from cart!</p>`;
-                            delete cart[key];
-                        } else if (cart[key].qty > database[key].stock) {
-                            html += `<p>${cart[key].name} - Not enough stock! Cart quantity adjusted!</p>`;
-                            cart[key].qty = database[key].stock;
-                        }
-                        if (cart[key])
-                            cart[key] = {
-                                ...cart[key],
-                                ...database[key]
-                            };
-                    }
-                    if (html) {
-                        helper.innerHTML = html;
-                        document.body.appendChild(helper);
-                    }
-                    localStorage.setItem('cart', JSON.stringify(cart));
-                    resolve();
-                })
-                .catch(function (err) {
-                    reject(err);
-                });
-        });
-    } else {
-        return Promise.resolve();
-    }
-}
-
-function checkout() {
-    document.querySelector('.header h1').innerHTML = 'Confirm order';
-    showLoading();
-    checkStock()
-        .then(function () {
-            drawOrder();
-        })
-}
-
-function drawOrder() {
-    let html = `
-        <table>
-        <thead>
-            <tr>
-                <th>Product name</th>
-                <th>Price</th>
-                <th>Qty</th>
-                <th>Subtotal</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody></tbody>
-        </table>
-        <div class="cartDetails"></div>
-        `;
-    document.querySelector('#mainContainer').innerHTML = html;
-    html = '';
-    let totalProducts = 0;
-    let totalPrice = 0;
+function updateCart() {
+    let modified = false;
+    let alert = document.createElement('div');
+    alert.id = 'alert';
+    let html = '<div class="alert alert-danger alert-dismissible fade show my-position-absolute text-center">';
     for (let key in cart) {
-        let subtotal = cart[key].price * cart[key].qty;
-        html += `
-                <tr>
-                    <td>${cart[key].name}</td>
-                    <td>${cart[key].price} euro</td>
-                    <td>${cart[key].qty} pcs</td>
-                    <td>${subtotal} euro</td>
-                </tr>    
-            `;
-        totalProducts += cart[key].qty;
-        totalPrice += subtotal;
+        if (!products[key]) {
+            html += `<p class="m-2"><b>${cart[key].name}</b> - Not available! Product removed from cart!</p>`;
+            delete cart[key];
+            modified = true;
+        } else if (products[key].stock === 0) {
+            html += `<p class="m-2"><b>${cart[key].name}</b> - Out of stock! Product removed from cart!</p>`;
+            delete cart[key];
+            modified = true;
+        } else if (cart[key].qty > products[key].stock) {
+            html += `<p class="m-2"><b>${cart[key].name}</b> - Not enough stock! Cart quantity adjusted!</p>`;
+            cart[key].qty = products[key].stock;
+            modified = true;
+        }
     }
-    document.querySelector('table tbody').innerHTML = html;
-    html = `
-            <p>Products in cart: ${totalProducts}</p>
-            <p>Taxes: 0 %</p>
-            <p>Shipping: 0 euro</p>
-            <p><b>Total price: ${totalPrice} euro</b></p>
-            <button id="confirmBtn">Confirm</Button>
-            <button id="cancelBtn">Cancel</Button>
-        `;
-    document.querySelector('.cartDetails').innerHTML = html;
-    document.querySelector('#confirmBtn').addEventListener('click', confirm);
-    document.querySelector('#cancelBtn').addEventListener('click', cancel);
+    html += `
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    </div>`;
+    alert.innerHTML = html;
+    if (modified) {
+        document.body.append(alert);
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
 }
 
-function cancel() {
-    document.querySelector('.header h1').innerHTML = 'My Online Store';
-    renderCart();
-}
-
-function confirm() {
-    showLoading();
-    let orders = [];
-    for (let key in cart) {
-        let order = fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/${key}/stock.json`, {
-            method: 'PUT',
-            body: database[key].stock - cart[key].qty
-        });
-        orders.push(order);
-    }
-    Promise.all(orders)
-        .then(function () {
-            localStorage.removeItem('cart');
-            document.querySelector('.header h1').innerHTML = 'Thank you!';
-            document.querySelector('#mainContainer').innerHTML = '<button id="backBtn">Back to store</button>';
-            document.querySelector('#backBtn').addEventListener('click', backToStore);
-
-        })
-        .catch(function (err) {
-            console.log(err);
-        })
-
+function placeOrder() {
+    // checkStock()
+    //     .then(function () {
+    //         let orders = [];
+    //         for (let key in cart) {
+    //             let order = fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/${key}/stock.json`, {
+    //                 method: 'PUT',
+    //                 body: database[key].stock - cart[key].qty
+    //             });
+    //             orders.push(order);
+    //         }
+    //         Promise.all(orders)
+    //             .then(function () {
+    //                 console.log('OK');
+    //             })
+    //             .catch(function (err) {
+    //                 console.log(err);
+    //             })
+    //     });
 }
 
 function renderHeader() {

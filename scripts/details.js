@@ -4,37 +4,68 @@ let product;
 let cart;
 initCart();
 renderHeader();
+showCartInfo();
 addListeners('header');
-updateCartBtn();
 showLoading();
 getProductDetails()
     .then(function (response) {
         if (response.status === 200)
             return response.json();
         else
-            console.log(response.statusText);
+            throw Error(response.status);
     })
     .then(function (data) {
         product = data;
         clearLoading();
         if (product) {
-            if (cart[key]) {
-                cart[key] = {
-                    ...cart[key],
-                    ...product
-                };
-            }
+            syncCart();
             renderDetails();
             addListeners('details');
-            updateCartBtn();
+            showCartInfo();
         } else {
-            document.querySelector('#mainContainer').innerHTML = 'Product not available!';
+            alert();
+            addListeners('alert');
         }
     })
     .catch(function (err) {
         console.log(err)
     });
 
+function buttonClicked(...parameters) {
+    if (parameters.includes('add')) {
+        addToCart();
+        showCartInfo();
+        renderDetails();
+        addListeners('details');
+        popup();
+    }
+    if (parameters.includes('increase')) {
+        let qty = Number(document.querySelector('.qtyInput').value);
+        let cartQty = (cart[key]) ? cart[key].qty : 0;
+        if (product.stock > (cartQty + qty)) {
+            qty++;
+            document.querySelector('.qtyInput').value = qty;
+        }
+    }
+    if (parameters.includes('decrease')) {
+        let qty = Number(document.querySelector('.qtyInput').value);
+        if (qty > 1) {
+            qty--;
+            document.querySelector('.qtyInput').value = qty;
+        }
+    }
+}
+
+function alert() {
+    let alert = document.createElement('div');
+    alert.className = 'alert alert-danger mt-5 text-center d-table p-4 mx-auto';
+    alert.innerHTML = `
+    <p>Product not available!</p>
+    <button id="storeBtn" class="btn btn-dark mx-3">Continue shopping</button>
+    </button>
+    `;
+    document.body.append(alert);
+}
 
 function showLoading() {
     let div = document.createElement('div');
@@ -66,31 +97,23 @@ function addListeners(...parameters) {
     }
     if (parameters.includes('details')) {
         document.querySelector('#addBtn').addEventListener('click', function () {
-            addToCart();
-            updateCartBtn();
-            popup();
-            document.querySelector('.qtyInput').value = 1;
-            renderDetails();
-            addListeners('details');
+            buttonClicked('add');
         });
         document.querySelector('.increaseBtn').addEventListener('click', function () {
-            let qty = Number(document.querySelector('.qtyInput').value);
-            let cartQty = (cart[key]) ? cart[key].qty : 0;
-            if (product.stock > (cartQty + qty)) {
-                qty++;
-                document.querySelector('.qtyInput').value = qty;
-            }
+            buttonClicked('increase');
         });
         document.querySelector('.decreaseBtn').addEventListener('click', function () {
-            let qty = Number(document.querySelector('.qtyInput').value);
-            if (qty > 1) {
-                qty--;
-                document.querySelector('.qtyInput').value = qty;
-            }
+            buttonClicked('decrease');
         });
         document.querySelector('#storeBtn').addEventListener('click', function () {
             location.assign('../index.html');
         })
+    }
+    if (parameters.includes('alert')) {
+
+        document.querySelector('#storeBtn').addEventListener('click', function () {
+            location.assign('../index.html');
+        });
     }
 }
 
@@ -103,11 +126,16 @@ function searchClicked() {
 
 function popup() {
     let popup = document.createElement('div');
-    popup.className = 'popup alert alert-success';
-    popup.innerHTML = `Product <b>${product.name}</b> added to your cart!`;
-    document.body.appendChild(popup);
+    popup.className = 'alert w-100 alert-success alert-dismissible fade show my-position-absolute text-center';
+    popup.innerHTML = `
+        Product <b>${product.name}</b> added to your cart!
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+    `;
+    document.querySelector('#details').appendChild(popup);
     setTimeout(function () {
-        document.body.removeChild(popup);
+        popup.parentElement.removeChild(popup);
     }, 3000);
 }
 
@@ -125,7 +153,17 @@ function initCart() {
         cart = {};
 }
 
-function updateCartBtn() {
+function syncCart() {
+    if (cart[key]) {
+        cart[key] = {
+            ...cart[key],
+            ...product
+        };
+        localStorage.setItem('cart', JSON.stringify(cart));
+    }
+}
+
+function showCartInfo() {
     if (document.getElementById('cartItems')) {
         let items = 0;
         for (let key in cart) {
@@ -137,19 +175,13 @@ function updateCartBtn() {
 
 function addToCart() {
     let qty = Number(document.querySelector('.qtyInput').value);
-    let cartQty = (cart[key]) ? cart[key].qty : 0;
-    if (product.stock >= (cartQty + qty)) {
-        sufficientStock = true;
-        if (cart[key])
-            cart[key].qty += qty;
-        else {
-            product.qty = qty;
-            cart[key] = product;
-        }
-        localStorage.setItem('cart', JSON.stringify(cart));
-    } else {
-        sufficientStock = false;
+    if (cart[key])
+        cart[key].qty += qty;
+    else {
+        product.qty = qty;
+        cart[key] = product;
     }
+    localStorage.setItem('cart', JSON.stringify(cart));
 }
 
 function renderDetails() {
@@ -159,7 +191,7 @@ function renderDetails() {
     }
     div = document.createElement('div');
     div.id = 'details';
-    div.className = 'container p-0';
+    div.className = 'container p-0 position-relative';
     let html = `
     <div class="row no-gutters justify-content-center">
         <div class="col-12 col-md-6 col-xl-5 p-4 d-flex justify-content-center align-items-center">
@@ -207,7 +239,7 @@ function renderDetails() {
                 </div>  
                 <button id="addBtn" class="btn btn-dark mb-1">Add to cart</button>
                 <button id="storeBtn" class="btn btn-dark">Continue shopping</button>
-            </div>
+            </alert>
         </div>
     </div>
         `;
