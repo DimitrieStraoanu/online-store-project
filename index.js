@@ -1,4 +1,4 @@
-let products = {};
+let products;
 let cart;
 initCart();
 renderHeader();
@@ -18,31 +18,79 @@ getProducts()
         renderCarousel();
         renderProducts(products);
         renderNav();
-        addListeners('header', 'nav', 'products', 'window');
+        window.addEventListener('scroll', userInteraction);
         checkSearchParams();
     })
     .catch(function (err) {
         console.log(err);
     });
 
+function userInteraction() {
+
+    if (event.type === 'scroll') {
+        let distFromTop = document.querySelector('#products').getBoundingClientRect().top - document.querySelector('#nav').getBoundingClientRect().height;
+        if (distFromTop < 0) {
+            document.querySelector('#nav').classList.add('fixed-top');
+            document.querySelector('#upBtn').classList.remove('d-none');
+        } else if (distFromTop > 0) {
+            document.querySelector('#nav').classList.remove('fixed-top');
+            document.querySelector('#upBtn').classList.add('d-none');
+        }
+    }
+
+    if (event.type === 'click') {
+        if (this.id === 'storeBtn' || event.target.id === 'logo') {
+            location.assign('./index.html');
+        }
+        if (this.id === 'cartBtn') {
+            location.assign('../pages/cart.html');
+        }
+        if (this.id === 'upBtn') {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+        if (this.id === 'adminBtn') {
+            location.assign('../pages/admin.html');
+        }
+        if (this.id === 'searchBtn') {
+            let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
+            if (searchString) {
+                renderProducts(findProducts(searchString));
+                document.querySelector('#searchInput').value = '';
+                scroll();
+            }
+        }
+        if (this.id === 'allBtn') {
+            renderProducts(products);
+            scroll();
+        }
+        if (this.id === 'clothingBtn' || this.id === 'discounts-3') {
+            renderProducts(findProducts('clothing'));
+            scroll();
+        }
+        if (this.id === 'footwearBtn' || this.id === 'discounts-2' || this.id === 'discounts-4') {
+            renderProducts(findProducts('footwear'));
+            scroll();
+        }
+        if (this.id === 'accessoriesBtn' || this.id === 'discounts-1') {
+            renderProducts(findProducts('accessories'));
+            scroll();
+        }
+        if (this.classList.contains('detailsBtn')) {
+            location.assign(`./pages/details.html?key=${event.target.dataset.key}`);
+        }
+    }
+}
+
 function checkSearchParams() {
     let url = new URL(document.URL);
     let searchString = url.searchParams.get('search');
     if (searchString) {
         renderProducts(findProducts(searchString));
-        addListeners('products');
         scroll();
         window.history.pushState(null, null, 'index.html');
-    }
-}
-
-function searchClicked() {
-    let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
-    if (searchString) {
-        renderProducts(findProducts(searchString));
-        addListeners('products');
-        document.querySelector('#searchInput').value = '';
-        scroll();
     }
 }
 
@@ -86,7 +134,7 @@ function renderHeader() {
     let div = document.createElement('div');
     div.id = 'header';
     div.className = 'vh-100 d-flex flex-column';
-    div.innerHTML = `
+    let html = `
         <div class="container-fluid p-0">
         	<div class="row no-gutters py-3 px-5 bg-white border-bottom">
         	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
@@ -114,6 +162,14 @@ function renderHeader() {
             </div>    
         </div>
         `;
+    div.innerHTML = html;
+
+    div.querySelector('#logo').addEventListener('click', userInteraction);
+    div.querySelector('#searchBtn').addEventListener('click', userInteraction);
+    div.querySelector('#cartBtn').addEventListener('click', userInteraction);
+    div.querySelector('#adminBtn').addEventListener('click', userInteraction);
+    div.querySelector('#upBtn').addEventListener('click', userInteraction);
+
     document.body.appendChild(div);
 }
 
@@ -121,7 +177,7 @@ function renderNav() {
     let div = document.createElement('div');
     div.id = 'nav';
     div.className = 'p-3 bg-white border-bottom';
-    div.innerHTML = `
+    let html = `
     <ul class="nav nav-justified">
     <li class="nav-item">
         <button id="allBtn" class="btn btn-outline-dark border-0 text-nowrap">All products</button>
@@ -137,10 +193,17 @@ function renderNav() {
     </li>
     </ul>
     `;
+    div.innerHTML = html;
+
+    div.querySelector('#allBtn').addEventListener('click', userInteraction);
+    div.querySelector('#clothingBtn').addEventListener('click', userInteraction);
+    div.querySelector('#footwearBtn').addEventListener('click', userInteraction);
+    div.querySelector('#accessoriesBtn').addEventListener('click', userInteraction);
+
     document.querySelector('#header').appendChild(div);
 }
 
-function renderProducts(products) {
+function renderProducts(productsObj) {
     if (document.querySelector('#products')) {
         document.body.removeChild(document.querySelector('#products'));
     }
@@ -148,16 +211,16 @@ function renderProducts(products) {
     div.id = 'products';
     div.className = 'container-fluid px-4';
     let html = '<div class="row">';
-    for (let key in products) {
+    for (let key in productsObj) {
         html += `
             <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mt-4">
             <div class="card text-center h-100">
                 <div class="h-100 d-flex align-items-center justify-content-center p-2">
-                    <img src="${products[key].pic}" class="img-fluid">
+                    <img src="${productsObj[key].pic}" class="img-fluid">
                 </div>
                 <div class="card-body">
-                <h4 class="card-title">${products[key].name}</h4>
-                <p>Price: ${products[key].price} euro</p>
+                <h4 class="card-title">${productsObj[key].name}</h4>
+                <p>Price: ${productsObj[key].price} euro</p>
                 </div>
                 <div class="card-footer">
                     <button class="detailsBtn btn btn-dark" data-key="${key}">Details</button>
@@ -171,60 +234,13 @@ function renderProducts(products) {
     <div class="p-5"></div>
     `;
     div.innerHTML = html
+
+    let buttons = div.querySelectorAll('.detailsBtn');
+    for (let element of buttons) {
+        element.addEventListener('click', userInteraction);
+    }
+
     document.body.appendChild(div);
-}
-
-function addListeners(...parameters) {
-    if (parameters.includes('window')) {
-        window.addEventListener('scroll', sticky);
-    }
-
-    if (parameters.includes('products')) {
-        let buttons = document.querySelectorAll('.detailsBtn');
-        for (let element of buttons) {
-            element.addEventListener('click', function () {
-                location.assign(`./pages/details.html?key=${element.dataset.key}`);
-            });
-        }
-    }
-    if (parameters.includes('header')) {
-
-        document.querySelector('#logo').addEventListener('click', function () {
-            location.assign('./index.html');
-        });
-
-        document.querySelector('#searchBtn').addEventListener('click', searchClicked);
-
-        document.querySelector('#cartBtn').addEventListener('click', function () {
-            location.assign('./pages/cart.html');
-        });
-
-        document.querySelector('#adminBtn').addEventListener('click', function () {
-            location.assign('./pages/admin.html');
-        });
-
-        document.querySelector('#upBtn').addEventListener('click', function () {
-            window.scrollTo({
-                top: 0,
-                behavior: 'smooth'
-            });
-        });
-
-    }
-    if (parameters.includes('nav')) {
-        document.querySelector('#allBtn').addEventListener('click', function () {
-            navClicked('all');
-        });
-        document.querySelector('#clothingBtn').addEventListener('click', function () {
-            navClicked('clothing');
-        });
-        document.querySelector('#footwearBtn').addEventListener('click', function () {
-            navClicked('footwear');
-        });
-        document.querySelector('#accessoriesBtn').addEventListener('click', function () {
-            navClicked('accessories');
-        });
-    }
 }
 
 function findProducts(parameter) {
@@ -243,23 +259,6 @@ function findProducts(parameter) {
     return foundProducts;
 }
 
-function navClicked(parameter) {
-    if (parameter === 'all') {
-        renderProducts(products);
-    }
-    if (parameter === 'clothing') {
-        renderProducts(findProducts(parameter));
-    }
-    if (parameter === 'footwear') {
-        renderProducts(findProducts(parameter));
-    }
-    if (parameter === 'accessories') {
-        renderProducts(findProducts(parameter));
-    }
-    scroll();
-    addListeners('products');
-}
-
 function scroll() {
     let height = document.querySelector('#header').getBoundingClientRect().height - document.querySelector('#nav').getBoundingClientRect().height;
     window.scrollTo({
@@ -268,36 +267,26 @@ function scroll() {
     });
 }
 
-function sticky() {
-    let distFromTop = document.querySelector('#products').getBoundingClientRect().top - document.querySelector('#nav').getBoundingClientRect().height;
-    if (distFromTop < 0) {
-        document.querySelector('#nav').classList.add('fixed-top');
-        document.querySelector('#upBtn').classList.remove('d-none');
-    } else if (distFromTop > 0) {
-        document.querySelector('#nav').classList.remove('fixed-top');
-        document.querySelector('#upBtn').classList.add('d-none');
-    }
-}
-
 function showLoading() {
     let div = document.createElement('div');
-    div.className = 'loading d-flex justify-content-center align-items-center flex-fill';
+    div.id = 'loading'
+    div.className = 'my-fullscreen d-flex justify-content-center align-items-center';
     div.innerHTML = `
     <div class="spinner-border" role="status">
         <span class="sr-only">Loading...</span>
     </div>`;
-    document.querySelector('body #header').appendChild(div);
+    document.body.appendChild(div);
 }
 
 function clearLoading() {
-    let el = document.querySelector('.loading')
-    el.parentElement.removeChild(el);
+    let div = document.querySelector('#loading')
+    div.parentElement.removeChild(div);
 }
 
 function renderCarousel() {
     let div = document.createElement('div');
     div.className = 'flex-fill';
-    div.innerHTML = `
+    let html = `
     <div id="discounts" class="carousel slide h-100" data-ride="carousel" data-interval="5000">
     <ol class="carousel-indicators">
         <li data-target="#discounts" data-slide-to="0" class="active"></li>
@@ -311,7 +300,7 @@ function renderCarousel() {
                 <div class="bg-white-50 p-3 p-lg-5 text-center">
                     <h1 class="display-4">30% discount!</h1>
                     <h1 class="font-weight-light">for all accessories</h1>
-                    <button class="btn btn-outline-dark mt-4">Click to shop</button>
+                    <button id="discounts-1" class="btn btn-outline-dark mt-4">Click to shop</button>
                 </div>
             </div>
         </div>
@@ -320,7 +309,7 @@ function renderCarousel() {
                 <div class="bg-white-50 p-3 p-lg-5 text-center">
                     <h1 class="display-4">25% discount!</h1>
                     <h1 class="font-weight-light">for all office shoes</h1>
-                    <button class="btn btn-outline-dark mt-4">Click to shop</button>
+                    <button id="discounts-2" class="btn btn-outline-dark mt-4">Click to shop</button>
                 </div>
             </div>
         </div>
@@ -329,7 +318,7 @@ function renderCarousel() {
                 <div class="bg-white-50 p-3 p-lg-5 text-center">
                     <h1 class="display-4">30% discount!</h1>
                     <h1 class="font-weight-light">for last year collection</h1>
-                    <button class="btn btn-outline-dark mt-4">Click to shop</button>
+                    <button id="discounts-3" class="btn btn-outline-dark mt-4">Click to shop</button>
                 </div>
             </div>
         </div>
@@ -338,7 +327,7 @@ function renderCarousel() {
                 <div class="bg-white-50 p-3 p-lg-5 text-center">
                     <h1 class="display-4">50% discount!</h1>
                     <h1 class="font-weight-light">for all sport shoes</h1>
-                    <button class="btn btn-outline-dark mt-4">Click to shop</button>
+                    <button id="discounts-4" class="btn btn-outline-dark mt-4">Click to shop</button>
                 </div>
             </div>
         </div>
@@ -353,6 +342,12 @@ function renderCarousel() {
     </a>
     </div>
     `;
+    div.innerHTML = html;
+    div.querySelector('#discounts-1').addEventListener('click', userInteraction);
+    div.querySelector('#discounts-2').addEventListener('click', userInteraction);
+    div.querySelector('#discounts-3').addEventListener('click', userInteraction);
+    div.querySelector('#discounts-4').addEventListener('click', userInteraction);
+
     document.querySelector('#header').appendChild(div);
     $('.carousel').carousel();
 }

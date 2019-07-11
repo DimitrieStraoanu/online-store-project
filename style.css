@@ -10,27 +10,28 @@
     cursor: pointer;
 }
 
+#confirm{
+    height:60px;
+}
+
 .bg-white-50 {
     background: rgba(255, 255, 255, 0.5);
 }
 
-.loading {
-    height: 500px;
-}
-
-.popup {
-    position: fixed;
-    bottom: 3em;
-    right: 50%;
-    transform: translateX(50%);
-    z-index: 1000;
-    padding: 2em;
-}
-
-.my-position-absolute{
+.my-absolute-top {
     position: absolute;
-    top:0;
+    top: 0;
     z-index: 10000;
+}
+
+.my-fullscreen{
+    z-index: 10000;
+    position:fixed;
+    top:0;
+    left:0;
+    bottom:0;
+    right:0;
+    background: rgba(255, 255, 255, 0.5);
 }
 
 /* input[type="text"],

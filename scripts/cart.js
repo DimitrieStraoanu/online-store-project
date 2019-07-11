@@ -2,33 +2,57 @@ let cart;
 let products;
 initCart();
 renderHeader();
-addListeners('header');
-showLoading();
-getProducts()
-    .then(function (response) {
-        if (response.status === 200)
-            return response.json();
-        else
-            console.log(response.statusText);
-    })
-    .then(function (data) {
-        products = data;
-        syncCart();
-        updateCart();
-        showCartInfo();
-        clearLoading();
-        renderCart();
-        if (Object.keys(cart).length > 0) {
-            addListeners('cartProducts');
-        } else {
-            addListeners('alert');
-        }
-    })
-    .catch(function (err) {
-        console.log(err)
-    });
+if (Object.keys(cart).length > 0) {
+    showLoading();
+    getProducts()
+        .then(function (response) {
+            if (response.status === 200)
+                return response.json();
+            else
+                throw Error(response.status);
+        })
+        .then(function (data) {
+            products = data;
+            clearLoading();
+            syncCart();
+            showCartInfo();
+            if(!updateCart()){
+                renderCart();
+            }
+        })
+        .catch(function (err) {
+            console.log(err)
+        });
+} else {
+    showCartInfo();
+    renderCart();    
+}
 
-function buttonClicked(event) {
+function userInteraction(event) {
+
+    if (this.id === 'storeBtn' || event.target.id === 'logo') {
+        location.assign('../index.html');
+    }
+    if (this.id === 'cartBtn') {
+        location.assign('./cart.html');
+    }
+    if (this.id === 'adminBtn') {
+        location.assign('./admin.html');
+    }
+    if (this.id === 'closeBtn') {
+        renderCart();
+        let cartUpdateInfo = document.querySelector('#cartUpdateInfo');
+        cartUpdateInfo.parentElement.removeChild(cartUpdateInfo);
+    }
+    if (this.id === 'searchBtn') {
+        let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
+        if (searchString) {
+            location.assign(`../index.html?search=${searchString}`);
+        }
+    }
+    if (this.id === 'orderBtn') {
+        placeOrder();
+    }    
     if (event.target.classList.contains('increaseBtn')) {
         let key = event.target.dataset.key;
         if (products[key].stock > cart[key].qty) {
@@ -36,7 +60,6 @@ function buttonClicked(event) {
             localStorage.setItem('cart', JSON.stringify(cart));
             showCartInfo();
             renderCart();
-            addListeners('cartProducts');
         }
     }
     if (event.target.classList.contains('decreaseBtn')) {
@@ -46,7 +69,6 @@ function buttonClicked(event) {
             localStorage.setItem('cart', JSON.stringify(cart));
             showCartInfo();
             renderCart();
-            addListeners('cartProducts');
         }
     }
     if (event.target.classList.contains('removeBtn')) {
@@ -55,11 +77,6 @@ function buttonClicked(event) {
         localStorage.setItem('cart', JSON.stringify(cart));
         showCartInfo();
         renderCart();
-        if (Object.keys(cart).length > 0) {
-            addListeners('cartProducts');
-        } else {
-            addListeners('alert');
-        }
     }
 }
 
@@ -101,7 +118,8 @@ function getProducts() {
 
 function showLoading() {
     let div = document.createElement('div');
-    div.className = 'loading d-flex justify-content-center align-items-center';
+    div.id = 'loading';
+    div.className = 'my-fullscreen d-flex justify-content-center align-items-center';
     div.innerHTML = `
     <div class="spinner-border" role="status">
         <span class="sr-only">Loading...</span>
@@ -110,7 +128,7 @@ function showLoading() {
 }
 
 function clearLoading() {
-    let loading = document.querySelector('.loading')
+    let loading = document.querySelector('#loading');
     loading.parentElement.removeChild(loading);
 }
 
@@ -129,7 +147,7 @@ function renderCart() {
         <table class="table m-0 mt-5 text-center">
         <thead>
             <tr>
-                <th class="border-0">Product name</th>
+                <th class="border-0">Product</th>
                 <th class="border-0">Price</th>
                 <th class="border-0">Qty</th>
                 <th class="border-0">Subtotal</th>
@@ -171,76 +189,44 @@ function renderCart() {
         <p>Shipping: 0 euro</p>
         <p><b>Total price: ${totalPrice} euro</b></p>
         <button id="storeBtn" class="btn btn-dark mx-3 mb-1">Continue shopping</button>
-        <button id="orderBtn" class="btn btn-dark mx-3">Place order</Button>
+        <button id="orderBtn" class="btn btn-dark mx-3">Place order</button>
 
         </div>
         </div>
         `;
         div.innerHTML = html;
+
+        div.querySelector('#storeBtn').addEventListener('click', userInteraction);
+        div.querySelector('#orderBtn').addEventListener('click', userInteraction);
+        div.querySelector('table').addEventListener('click', userInteraction);
+
         document.body.appendChild(div);
     } else {
-        let alert = document.createElement('div');
-        alert.innerHTML = `
-        <div class="alert alert-light text-center p-5">
-        <p>Shopping cart is empty!</p>
-        <button id="storeBtn" class="btn btn-dark mx-3">Continue shopping</button>
+        let div = document.createElement('div');
+        div.className = "d-flex align-items-center justify-content-center my-fullscreen";
+        div.innerHTML = `
+        <div class="alert alert-light text-center border shadow p-5">
+        <h4>Shopping cart is empty!</h4>
+        <button id="storeBtn" class="btn btn-dark mt-3">Continue shopping</button>
         </div>
         `;
-        document.body.appendChild(alert);
-    }
-}
 
-function addListeners(...parameters) {
-    if (parameters.includes('header')) {
+        div.querySelector('#storeBtn').addEventListener('click', userInteraction);
 
-        document.querySelector('#logo').addEventListener('click', function () {
-            location.assign('../index.html');
-        });
-
-        document.querySelector('#searchBtn').addEventListener('click', searchClicked);
-
-        document.querySelector('#cartBtn').addEventListener('click', function () {
-            location.assign('./cart.html');
-        });
-
-        document.querySelector('#adminBtn').addEventListener('click', function () {
-            location.assign('./admin.html');
-        });
-    }
-
-    if (parameters.includes('cartProducts')) {
-
-        document.querySelector('#storeBtn').addEventListener('click', function () {
-            location.assign('../index.html');
-        });
-
-        document.querySelector('#orderBtn').addEventListener('click', placeOrder);
-
-        document.querySelector('table').addEventListener('click', function () {
-            buttonClicked(event)
-        });
-    }
-
-    if (parameters.includes('alert')) {
-
-        document.querySelector('#storeBtn').addEventListener('click', function () {
-            location.assign('../index.html');
-        });
-    }
-}
-
-function searchClicked() {
-    let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
-    if (searchString) {
-        location.assign(`../index.html?search=${searchString}`);
+        document.body.appendChild(div);
     }
 }
 
 function updateCart() {
     let modified = false;
-    let alert = document.createElement('div');
-    alert.id = 'alert';
-    let html = '<div class="alert alert-danger alert-dismissible fade show my-position-absolute text-center">';
+    let div = document.createElement('div');
+    div.id = 'alert';
+    div.className = 'my-fullscreen d-flex align-items-center justify-content-center';
+    let html = `
+    <div class="alert alert-light border shadow p-5 text-center">
+    <h4 class="mb-3">Some products changed!</h4>
+    <hr>
+    `;
     for (let key in cart) {
         if (!products[key]) {
             html += `<p class="m-2"><b>${cart[key].name}</b> - Not available! Product removed from cart!</p>`;
@@ -257,43 +243,86 @@ function updateCart() {
         }
     }
     html += `
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
+    <hr>
+    <h6 class="text-danger">Please review your cart items.<h6>
+    <button id="closeBtn" class="btn btn-dark mt-3 w-50">Close</button>
     </div>`;
-    alert.innerHTML = html;
+    div.innerHTML = html;
+    div.id = 'cartUpdateInfo';
+    div.querySelector('#closeBtn').addEventListener('click', userInteraction);
     if (modified) {
-        document.body.append(alert);
+        document.body.append(div);
         localStorage.setItem('cart', JSON.stringify(cart));
+        return true;
     }
+    return false;
 }
 
 function placeOrder() {
-    // checkStock()
-    //     .then(function () {
-    //         let orders = [];
-    //         for (let key in cart) {
-    //             let order = fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/${key}/stock.json`, {
-    //                 method: 'PUT',
-    //                 body: database[key].stock - cart[key].qty
-    //             });
-    //             orders.push(order);
-    //         }
-    //         Promise.all(orders)
-    //             .then(function () {
-    //                 console.log('OK');
-    //             })
-    //             .catch(function (err) {
-    //                 console.log(err);
-    //             })
-    //     });
+    showLoading();
+    getProducts()
+        .then(function (response) {
+            if (response.status === 200)
+                return response.json();
+            else
+                throw Error(response.status);
+        })
+        .then(function (data) {
+            products = data;
+            syncCart();
+            if (!updateCart()) {
+                let orders = [];
+                for (let key in cart) {
+                    let order = fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/${key}/stock.json`, {
+                        method: 'PUT',
+                        body: products[key].stock - cart[key].qty
+                    });
+                    orders.push(order);
+                }
+                Promise.all(orders)
+                    .then(function () {
+                        localStorage.removeItem('cart');
+                        clearLoading();
+
+                        let div = document.createElement('div');
+                        div.className = 'my-fullscreen d-flex align-items-center justify-content-center';
+                        let html = `
+                        <div class="alert alert-light p-5 border text-center shadow">
+                            <h4 class="mb-3">Thank you!</h4>
+                            <hr>
+                            <h6 class="text-success">Your order was successfully placed.</h6>
+                            <button id="storeBtn" class="btn btn-dark mt-3">Continue shopping</button>
+                        </div>
+                        `;
+                        div.innerHTML = html;
+                        div.querySelector('#storeBtn').addEventListener('click', userInteraction);
+                        document.body.appendChild(div);
+                    })
+                    .catch(function (err) {
+                        console.log(err);
+                    })
+
+            } else {
+                clearLoading();
+                showCartInfo();
+                renderCart();
+                if (Object.keys(cart).length > 0) {
+                    addListeners('cartProducts');
+                } else {
+                    addListeners('alert');
+                }
+            }
+        })
+        .catch(function (err) {
+            console.log(err)
+        });
 }
 
 function renderHeader() {
     let div = document.createElement('div');
     div.id = 'header';
     div.className = 'd-flex flex-column';
-    div.innerHTML = `
+    let html = `
         <div class="container-fluid p-0">
         	<div class="row no-gutters py-3 px-5 bg-white border-bottom">
         	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
@@ -318,5 +347,12 @@ function renderHeader() {
             </div>
         </div>
         `;
+    div.innerHTML = html;
+
+    div.querySelector('#logo').addEventListener('click', userInteraction);
+    div.querySelector('#searchBtn').addEventListener('click', userInteraction);
+    div.querySelector('#cartBtn').addEventListener('click', userInteraction);
+    div.querySelector('#adminBtn').addEventListener('click', userInteraction);
+
     document.body.appendChild(div);
 }

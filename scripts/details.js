@@ -5,7 +5,6 @@ let cart;
 initCart();
 renderHeader();
 showCartInfo();
-addListeners('header');
 showLoading();
 getProductDetails()
     .then(function (response) {
@@ -20,56 +19,70 @@ getProductDetails()
         if (product) {
             syncCart();
             renderDetails();
-            addListeners('details');
             showCartInfo();
         } else {
             alert();
-            addListeners('alert');
         }
     })
     .catch(function (err) {
         console.log(err)
     });
 
-function buttonClicked(...parameters) {
-    if (parameters.includes('add')) {
+function userInteraction(event) {
+    if (this.id === 'storeBtn' || this.id === 'logo') {
+        location.assign('../index.html');
+    }
+    if (this.id === 'cartBtn') {
+        location.assign('./cart.html');
+    }
+    if (this.id === 'adminBtn') {
+        location.assign('./admin.html');
+    }
+    if (this.id === 'searchBtn') {
+        let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
+        if (searchString) {
+            location.assign(`../index.html?search=${searchString}`);
+        }
+    }
+    if (this.id === 'addBtn') {
         addToCart();
         showCartInfo();
         renderDetails();
-        addListeners('details');
-        popup();
+        confirm();
     }
-    if (parameters.includes('increase')) {
-        let qty = Number(document.querySelector('.qtyInput').value);
+    if (this.id === 'increaseBtn') {
+        let qty = Number(document.querySelector('#qtyInput').value);
         let cartQty = (cart[key]) ? cart[key].qty : 0;
         if (product.stock > (cartQty + qty)) {
             qty++;
-            document.querySelector('.qtyInput').value = qty;
+            document.querySelector('#qtyInput').value = qty;
         }
     }
-    if (parameters.includes('decrease')) {
-        let qty = Number(document.querySelector('.qtyInput').value);
+    if (this.id === 'decreaseBtn') {
+        let qty = Number(document.querySelector('#qtyInput').value);
         if (qty > 1) {
             qty--;
-            document.querySelector('.qtyInput').value = qty;
+            document.querySelector('#qtyInput').value = qty;
         }
     }
 }
 
 function alert() {
-    let alert = document.createElement('div');
-    alert.className = 'alert alert-danger mt-5 text-center d-table p-4 mx-auto';
-    alert.innerHTML = `
+    let div = document.createElement('div');
+    div.className = 'alert alert-danger mt-5 text-center d-table p-4 mx-auto';
+    div.innerHTML = `
     <p>Product not available!</p>
     <button id="storeBtn" class="btn btn-dark mx-3">Continue shopping</button>
     </button>
     `;
-    document.body.append(alert);
+    div.querySelector('#storeBtn').addEventListener('click', userInteraction);
+    document.body.append(div);
 }
 
 function showLoading() {
     let div = document.createElement('div');
-    div.className = 'loading d-flex justify-content-center align-items-center';
+    div.id = 'loading';
+    div.className = 'my-fullscreen d-flex justify-content-center align-items-center';
     div.innerHTML = `
     <div class="spinner-border" role="status">
         <span class="sr-only">Loading...</span>
@@ -78,64 +91,17 @@ function showLoading() {
 }
 
 function clearLoading() {
-    let loading = document.querySelector('.loading')
+    let loading = document.querySelector('#loading')
     loading.parentElement.removeChild(loading);
 }
 
-function addListeners(...parameters) {
-    if (parameters.includes('header')) {
-        document.querySelector('#logo').addEventListener('click', function () {
-            location.assign('../index.html');
-        });
-        document.querySelector('#searchBtn').addEventListener('click', searchClicked);
-        document.querySelector('#cartBtn').addEventListener('click', function () {
-            location.assign('./cart.html');
-        });
-        document.querySelector('#adminBtn').addEventListener('click', function () {
-            location.assign('./admin.html');
-        });
-    }
-    if (parameters.includes('details')) {
-        document.querySelector('#addBtn').addEventListener('click', function () {
-            buttonClicked('add');
-        });
-        document.querySelector('.increaseBtn').addEventListener('click', function () {
-            buttonClicked('increase');
-        });
-        document.querySelector('.decreaseBtn').addEventListener('click', function () {
-            buttonClicked('decrease');
-        });
-        document.querySelector('#storeBtn').addEventListener('click', function () {
-            location.assign('../index.html');
-        })
-    }
-    if (parameters.includes('alert')) {
-
-        document.querySelector('#storeBtn').addEventListener('click', function () {
-            location.assign('../index.html');
-        });
-    }
-}
-
-function searchClicked() {
-    let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
-    if (searchString) {
-        location.assign(`../index.html?search=${searchString}`);
-    }
-}
-
-function popup() {
-    let popup = document.createElement('div');
-    popup.className = 'alert w-100 alert-success alert-dismissible fade show my-position-absolute text-center';
-    popup.innerHTML = `
-        Product <b>${product.name}</b> added to your cart!
-        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-        </button>
-    `;
-    document.querySelector('#details').appendChild(popup);
+function confirm() {
+    let div = document.createElement('div');
+    div.className = 'alert alert-success text-center m-0';
+    div.innerHTML = `Product <b>${product.name}</b> added to your cart!`;
+    document.querySelector('#confirm').append(div);
     setTimeout(function () {
-        popup.parentElement.removeChild(popup);
+        div.parentElement.removeChild(div);
     }, 3000);
 }
 
@@ -174,7 +140,7 @@ function showCartInfo() {
 }
 
 function addToCart() {
-    let qty = Number(document.querySelector('.qtyInput').value);
+    let qty = Number(document.querySelector('#qtyInput').value);
     if (cart[key])
         cart[key].qty += qty;
     else {
@@ -199,6 +165,7 @@ function renderDetails() {
         </div>
         <div class="col-12 col-md-6 col-xl-5 p-4 d-flex justify-content-center align-items-center">
             <div class="d-flex flex-column text-center flex-fill">
+                <div id="confirm"></div>
                 <h3 class="mb-5">${product.name}</h3>
                 <p>${product.desc}</p>
                 <p><b>Price: ${product.price} euro</b></p>
@@ -209,11 +176,11 @@ function renderDetails() {
                 <div">
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <button class="decreaseBtn btn btn-dark" disabled>-</button>
+                            <button id="decreaseBtn" class="btn btn-dark" disabled>-</button>
                         </div>
-                        <input class="qtyInput form-control text-center" type="text" value="All stock in cart" disabled>
+                        <input id="qtyInput" class="form-control text-center" type="text" value="All stock in cart" disabled>
                         <div class="input-group-append">
-                            <button class="increaseBtn btn btn-dark" disabled>+</button>
+                            <button id="increaseBtn" class="btn btn-dark" disabled>+</button>
                         </div>
                     </div>
                     </div">
@@ -229,11 +196,11 @@ function renderDetails() {
             <div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <button class="decreaseBtn btn btn-dark">-</button>
+                        <button id="decreaseBtn" class="btn btn-dark">-</button>
                     </div>
-                    <input class="qtyInput form-control text-center" type="text" value="1" disabled>
+                    <input id="qtyInput" class="form-control text-center" type="text" value="1" disabled>
                     <div class="input-group-append">
-                        <button class="increaseBtn btn btn-dark">+</button>
+                        <button id="increaseBtn" class="btn btn-dark">+</button>
                     </div>
                 </div>
                 </div>  
@@ -248,11 +215,11 @@ function renderDetails() {
             <div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <button class="decreaseBtn btn btn-dark" disabled>-</button>
+                        <button id="decreaseBtn" class="btn btn-dark" disabled>-</button>
                     </div>
-                    <input class="qtyInput form-control text-center" type="text" value="Out of stock" disabled>
+                    <input id="qtyInput" class="form-control text-center" type="text" value="Out of stock" disabled>
                     <div class="input-group-append">
-                        <button class="increaseBtn btn btn-dark" disabled>+</button>
+                        <button id="increaseBtn" class="btn btn-dark" disabled>+</button>
                     </div>
                 </div>
             </div>  
@@ -263,6 +230,12 @@ function renderDetails() {
 </div>
         `;
     div.innerHTML = html;
+
+    div.querySelector('#addBtn').addEventListener('click', userInteraction);
+    div.querySelector('#increaseBtn').addEventListener('click', userInteraction);
+    div.querySelector('#decreaseBtn').addEventListener('click', userInteraction);
+    div.querySelector('#storeBtn').addEventListener('click', userInteraction);
+
     document.body.appendChild(div);
 }
 
@@ -270,7 +243,7 @@ function renderHeader() {
     let div = document.createElement('div');
     div.id = 'header';
     div.className = 'd-flex flex-column';
-    div.innerHTML = `
+    let html = `
         <div class="container-fluid p-0">
         	<div class="row no-gutters py-3 px-5 bg-white border-bottom">
         	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
@@ -295,5 +268,12 @@ function renderHeader() {
             </div>
         </div>
         `;
+    div.innerHTML = html;
+
+    div.querySelector('#logo').addEventListener('click', userInteraction);
+    div.querySelector('#searchBtn').addEventListener('click', userInteraction);
+    div.querySelector('#cartBtn').addEventListener('click', userInteraction);
+    div.querySelector('#adminBtn').addEventListener('click', userInteraction);
+
     document.body.appendChild(div);
 }
