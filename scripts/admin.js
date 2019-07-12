@@ -1,32 +1,44 @@
-let database = {};
+let products = {};
 let addMode = false;
 showLoading();
-
-getDatabase()
+getProducts()
     .then(function (response) {
-        return response.json();
+        if (response.status === 200)
+            return response.json();
+        else
+            console.log(response.statusText);
     })
     .then(function (data) {
-        database = data;
-        draw();
-        addListeners();
+        products = data;
+        clearLoading()
+        renderProducts();
+    })
+    .catch(function (err) {
+        console.log(err);
     });
 
-function getDatabase() {
+function getProducts() {
     return fetch('https://my-online-store-2bdc4.firebaseio.com/my_products/.json', {
         method: 'GET',
     });
 }
 
-function draw() {
-    document.querySelector('#mainContainer').innerHTML = '';
+function renderProducts() {
+    let container = document.querySelector('#container');
+    if (container) {
+        container.parentElement.removeChild(container);
+    }
+    let div = document.createElement('div');
+    div.id = "container";
+    div.className = 'col-12 col-lg-9 mx-auto p-0';
     let html = `
-    <div>
-    <button id="addBtn">Add new product</button>
-    <button id="storeBtn">Store</button>
+    <div class="mb-3 text-center">
+    <button id="addBtn" class="btn btn-secondary text-nowarp"><i class="fas fa-plus"></i> Add new product</button>
+    <button id="storeBtn" class="btn btn-secondary">Go to Store</button>
     </div>
-    <table>
-        <thead><tr>
+    <table class="table table-striped text-center">
+        <thead>
+            <tr>
             <th>Image</th>
             <th>Name</th>
             <th>Price</th>
@@ -34,43 +46,64 @@ function draw() {
             <th></th>
             </tr>
         </thead>
-        <tbody></tbody>
-    </table>
+        <tbody>
     `;
-    document.querySelector('#mainContainer').innerHTML = html;
-    html = '';
-    for (let key in database) {
+    for (let key in products) {
         html += `
             <tr>
-                <td>
-                    <img class = "picSmall" src="${database[key].pic}">
+                <td class="align-middle">
+                    <div class="picSmall mx-auto overflow-hidden bg-white rounded">
+                        <img class="w-100" src="../assets/pics/${key}/${products[key].pics.split(' ')[0]}">
+                    </div>
                 </td>
-                <td><b>${database[key].name}</b></td>
-                <td>${database[key].price} euro</td>
-                <td>${database[key].stock} pcs</td>
-                <td>
-                    <button class="editBtn" data-key="${key}">Edit</button>
-                    <button class="removeBtn" data-key="${key}">Remove</button>
+                <td class="align-middle"><b>${products[key].name}</b></td>
+                <td class="align-middle">${products[key].price} euro</td>
+                <td class="align-middle">${products[key].stock} pcs</td>
+                <td class="align-middle">
+                    <div class="d-flex justify-content-center">
+                        <button class="editBtn btn btn-secondary col-6" data-key="${key}">Edit</button>
+                        <button class="removeBtn btn btn-danger col-6 ml-2 text-nowarp" data-key="${key}">Remove <i class="fas fa-trash-alt"></i></button>
+                    </div>
                 </td>
             </tr>    
         `;
     }
-    document.querySelector('table tbody').innerHTML = html;
-}
+    html += `
+        </tbody>
+    </table>
+    `;
+    div.innerHTML = html;
 
-function addListeners() {
-    document.querySelectorAll('.editBtn').forEach(function (element) {
-        element.addEventListener('click', editProduct);
-    });
-    document.querySelectorAll('.removeBtn').forEach(function (element) {
-        element.addEventListener('click', removeProduct);
-    });
-    document.querySelector('#addBtn').addEventListener('click', addProduct);
-    document.querySelector('#storeBtn').addEventListener('click', function () {
+    div.querySelector('#storeBtn').addEventListener('click', function () {
         location.assign('../index.html');
     });
+    div.querySelector('#addBtn').addEventListener('click', addProduct);
+    div.querySelectorAll('.editBtn').forEach(function (element) {
+        element.addEventListener('click', editProduct);
+    });
+    div.querySelectorAll('.removeBtn').forEach(function (element) {
+        element.addEventListener('click', removeProduct);
+    });
 
+    document.body.append(div);
 }
+
+function showLoading() {
+    let div = document.createElement('div');
+    div.id = 'loading';
+    div.className = 'my-fullscreen d-flex justify-content-center align-items-center';
+    div.innerHTML = `
+    <div class="spinner-border" role="status">
+        <span class="sr-only">Loading...</span>
+    </div>`;
+    document.body.appendChild(div);
+}
+
+function clearLoading() {
+    let loading = document.querySelector('#loading');
+    loading.parentElement.removeChild(loading);
+}
+
 
 function addProduct() {
     addMode = true;
@@ -80,102 +113,119 @@ function addProduct() {
 function editProduct() {
     let key = (addMode) ? '' : this.dataset.key;
     let html = `
-    <div class="centered">
-        <table class="left">
+        <table class="table text-left">
             <tr>
-                <td>Name:</td><td><input type="text" id="name" value="${(addMode)?'':database[key].name}"></td>
+                <th>Name:</th><td><input class="form-control" type="text" id="name" value="${(addMode)?'':products[key].name}"></td>
             </tr>
             <tr>
-                <td>Pic:</td><td><input type="text" id="pic" value="${(addMode)?'':database[key].pic}"></td>
+                <th>Pics:</th><td><input class="form-control" type="text" id="pics" value="${(addMode)?'':products[key].pics}"></td>
             </tr>
             <tr>
-                <td>Price:</td><td><input type="text" id="price" value="${(addMode)?'':database[key].price}"></td>
+                <th>Price:</th><td><input class="form-control" type="text" id="price" value="${(addMode)?'':products[key].price}"></td>
             </tr>
             <tr>
-                <td>Stock:</td><td><input type="text" id="stock" value="${(addMode)?'':database[key].stock}"></td>
+                <th>Stock:</th><td><input class="form-control" type="text" id="stock" value="${(addMode)?'':products[key].stock}"></td>
             </tr>
             <tr>
-                <td>Description:</td><td><textarea id="desc">${(addMode)?'':database[key].desc}</textarea></td>
+                <th>Description:</th><td><textarea id="desc" class="form-control">${(addMode)?'':products[key].desc}</textarea></td>
             </tr>
             <tr>
-                <td>Tags:</td><td><textarea id="tags">${(addMode)?'':database[key].tags}</textarea></td>
+                <th>Tags:</th><td><textarea id="tags" class="form-control">${(addMode)?'':products[key].tags}</textarea></td>
             </tr>
             <tr>
-                <td>Category:</td>
-                <td><select id="cat">
-                <option value="clothing" ${(!addMode && database[key].cat === 'clothing')?'selected':''}>Clothing</option>
-                <option value="footwear" ${(!addMode && database[key].cat === 'footwear')?'selected':''}>Footwear</option>
-                <option value="accessories" ${(!addMode && database[key].cat === 'accessories')?'selected':''}>Accessories</option>
+                <th>Category:</th>
+                <td><select id="cat" class="form-control">
+                <option value="clothing" ${(!addMode && products[key].cat === 'clothing')?'selected':''}>Clothing</option>
+                <option value="footwear" ${(!addMode && products[key].cat === 'footwear')?'selected':''}>Footwear</option>
+                <option value="accessories" ${(!addMode && products[key].cat === 'accessories')?'selected':''}>Accessories</option>
                 </select></td>
             </tr>
         </table>
-        <button id="saveBtn">Save</button>
-        <button id="cancelBtn">Cancel</button>
-    </div>
+        <div class="text-center justify-content-center d-flex m-3">
+        <button id="saveBtn" class="btn btn-success col-6">Save</button>
+        <button id="cancelBtn" class="btn btn-secondary col-6 ml-2">Cancel</button>
+        </div>
     `;
-    document.querySelector('#mainContainer').innerHTML = html;
+    document.querySelector('#container').innerHTML = html;
     document.querySelector('#saveBtn').addEventListener('click', function () {
-        let newProduct = {
-            name: document.querySelector('#name').value,
-            pic: document.querySelector('#pic').value,
-            price: Number(document.querySelector('#price').value),
-            stock: Number(document.querySelector('#stock').value),
-            desc: document.querySelector('#desc').value,
-            tags: document.querySelector('#tags').value,
-            cat: document.querySelector('#cat').value
-        };
-        showLoading();
-        fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/${(addMode)?'':key}.json`, {
-                method: (addMode) ? 'POST' : 'PUT',
-                body: JSON.stringify(newProduct)
-            })
-            .then(function () {
-                database[key] = newProduct;
-                draw();
-                addListeners();
-            })
-            .catch();
-        if (addMode)
-            addMode = false;
+        saveProduct(key);
     });
-    document.querySelector('#cancelBtn').addEventListener('click', function () {
-        draw();
-        addListeners();
-        if (addMode)
-            addMode = false;
-    });
+    document.querySelector('#cancelBtn').addEventListener('click', cancel);
+}
 
+function cancel() {
+    renderProducts();
+    if (addMode)
+        addMode = false;
+}
 
+function saveProduct(key) {
+    let newProduct = {
+        name: document.querySelector('#name').value,
+        pics: document.querySelector('#pics').value,
+        price: Number(document.querySelector('#price').value),
+        stock: Number(document.querySelector('#stock').value),
+        desc: document.querySelector('#desc').value,
+        tags: document.querySelector('#tags').value,
+        cat: document.querySelector('#cat').value
+    };
+    showLoading();
+    fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/${(addMode)?'':key}.json`, {
+            method: (addMode) ? 'POST' : 'PUT',
+            body: JSON.stringify(newProduct)
+        })
+        .then(function () {
+            getProducts()
+                .then(function (response) {
+                    if (response.status === 200)
+                        return response.json();
+                    else
+                        console.log(response.statusText);
+                })
+                .then(function (data) {
+                    products = data;
+                    clearLoading();
+                    renderProducts();
+                })
+        })
+        .catch(function (err) {
+            console.log(err);
+        });
+    if (addMode)
+        addMode = false;
 }
 
 function removeProduct() {
     let key = this.dataset.key;
+    let div = document.createElement('div');
+    div.className = "my-fullscreen";
     let html = `
-    <div class="centered">
-        <p>Remove product "${database[key].name}" from database?</p>
-        <button id="yesBtn">Yes</button>
-        <button id="noBtn">No</button>
+    <div class="bg-white rounded shadow border my-fixed-centered text-center p-5">
+        <p>Remove product "${products[key].name}" from database?</p>
+        <div class="d-flex">
+            <button id="yesBtn" class="btn btn-danger flex-fill">Yes</button>
+            <button id="noBtn" class="btn btn-secondary flex-fill ml-2">No</button>
+        </div>
     </div>
     `;
-    document.querySelector('#mainContainer').innerHTML = html;
-    document.querySelector('#yesBtn').addEventListener('click', function () {
+    div.innerHTML = html;
+    div.querySelector('#yesBtn').addEventListener('click', function () {
         showLoading();
         fetch(`https://my-online-store-2bdc4.firebaseio.com/my_products/${key}.json`, {
                 method: 'DELETE'
             })
             .then(function () {
-                delete database[key];
-                draw();
-                addListeners();
+                clearLoading();
+                div.parentElement.removeChild(div);
+                delete products[key];
+                renderProducts();
             })
-            .catch();
+            .catch(function (err) {
+                console.log(err);
+            });
     });
-    document.querySelector('#noBtn').addEventListener('click', function () {
-        draw();
-        addListeners();
+    div.querySelector('#noBtn').addEventListener('click', function () {
+        div.parentElement.removeChild(div);
     });
-}
-
-function showLoading() {
-    document.querySelector('#mainContainer').innerHTML = '<img src="../assets/loading.gif">';
+    document.body.append(div);
 }

@@ -20,6 +20,7 @@ getProducts()
         renderNav();
         window.addEventListener('scroll', userInteraction);
         checkSearchParams();
+
     })
     .catch(function (err) {
         console.log(err);
@@ -37,9 +38,13 @@ function userInteraction() {
             document.querySelector('#upBtn').classList.add('d-none');
         }
     }
-
     if (event.type === 'click') {
-        if (this.id === 'storeBtn' || event.target.id === 'logo') {
+        if (this.classList.contains('addBtn')) {
+            confirm(event);
+            quickAddToCart(event);
+            showCartInfo();
+        }
+        if (this.id === 'storeBtn' || this.id === 'logo') {
             location.assign('./index.html');
         }
         if (this.id === 'cartBtn') {
@@ -57,9 +62,17 @@ function userInteraction() {
         if (this.id === 'searchBtn') {
             let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
             if (searchString) {
-                renderProducts(findProducts(searchString));
-                document.querySelector('#searchInput').value = '';
-                scroll();
+                let foundProducts = findProducts(searchString);
+                if (Object.keys(foundProducts).length > 0) {
+                    document.querySelector('#searchInput').setAttribute('placeholder','');
+
+                    renderProducts(foundProducts);
+                    document.querySelector('#searchInput').value = '';
+                    scroll();
+                } else {
+                    document.querySelector('#searchInput').value = '';
+                    document.querySelector('#searchInput').setAttribute('placeholder', 'Product not found!');
+                }
             }
         }
         if (this.id === 'allBtn') {
@@ -70,8 +83,16 @@ function userInteraction() {
             renderProducts(findProducts('clothing'));
             scroll();
         }
-        if (this.id === 'footwearBtn' || this.id === 'discounts-2' || this.id === 'discounts-4') {
+        if (this.id === 'footwearBtn') {
             renderProducts(findProducts('footwear'));
+            scroll();
+        }
+        if (this.id === 'discounts-2') {
+            renderProducts(findProducts('office'));
+            scroll();
+        }
+        if (this.id === 'discounts-4') {
+            renderProducts(findProducts('sport'));
             scroll();
         }
         if (this.id === 'accessoriesBtn' || this.id === 'discounts-1') {
@@ -88,8 +109,15 @@ function checkSearchParams() {
     let url = new URL(document.URL);
     let searchString = url.searchParams.get('search');
     if (searchString) {
-        renderProducts(findProducts(searchString));
-        scroll();
+        let foundProducts = findProducts(searchString);
+        if (Object.keys(foundProducts).length > 0) {
+            renderProducts(foundProducts);
+            document.querySelector('#searchInput').value = '';
+            scroll();
+        } else {
+            document.querySelector('#searchInput').value = '';
+            document.querySelector('#searchInput').setAttribute('placeholder', 'Product not found!');
+        }
         window.history.pushState(null, null, 'index.html');
     }
 }
@@ -130,13 +158,41 @@ function showCartInfo() {
     }
 }
 
+function quickAddToCart(event) {
+    let key = event.currentTarget.dataset.key;
+    if (!cart[key] && products[key].stock > 0) {
+        cart[key] = products[key];
+        cart[key].qty = 1;
+    }
+    localStorage.setItem('cart', JSON.stringify(cart));
+}
+
+function confirm(event) {
+    let key = event.currentTarget.dataset.key;
+    let div = document.createElement('div');
+    div.className = 'alert alert-success text-center m-0 my-fixed-centered p-4';
+    let html = '';
+    if (cart[key]) {
+        html = `Product <b>${products[key].name}</b> already in cart. Go to cart to add more.`;
+    } else if (!cart[key] && products[key].stock > 0) {
+        html = `Product <b>${products[key].name}</b> added to your cart!`;
+    } else {
+        html = `Product <b>${products[key].name}</b> out of stock!`;
+    }
+    div.innerHTML = html;
+    document.body.append(div);
+    setTimeout(function () {
+        div.parentElement.removeChild(div);
+    }, 3000);
+}
+
 function renderHeader() {
     let div = document.createElement('div');
     div.id = 'header';
     div.className = 'vh-100 d-flex flex-column';
     let html = `
         <div class="container-fluid p-0">
-        	<div class="row no-gutters py-3 px-5 bg-white border-bottom">
+        	<div class="row no-gutters py-3 px-4 px-lg-5 bg-white border-bottom">
         	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
         	        <h1 id="logo" class="text-dark text-center font-weight-light">The Fashion Store</h1>
         	    </div>
@@ -148,13 +204,11 @@ function renderHeader() {
                         </div>
         	        </div>
         	    </div>
-        	    <div class="col-12 col-lg-12 col-xl-auto pl-md-3 pl-xl-5 d-flex align-items-center justify-content-center justify-content-lg-end">
-        	        <div>
-                        <button id="cartBtn" class="btn btn-outline-dark">
-                        <i class="fas fa-shopping-cart"></i> Shopping cart <span id="cartItems" class="badge badge-pill badge-danger font-weight-bolder"></span>
-                        </button>
-        	            <button id="adminBtn" class="btn btn-outline-dark ml-2"><i class="fas fa-lock"></i> Admin</button>
-        	        </div>
+        	    <div class="col-12 col-lg-12 col-xl-auto pl-xl-5 d-flex align-items-center justify-content-center justify-content-lg-end">
+                    <button id="cartBtn" class="btn btn-outline-dark flex-grow-1 flex-lg-grow-0">
+                    <i class="fas fa-shopping-cart"></i> Shopping cart <span id="cartItems" class="badge badge-pill badge-danger font-weight-bolder"></span>
+                    </button>
+                    <button id="adminBtn" class="btn btn-outline-dark ml-2"><i class="fas fa-lock"></i> Admin</button>
         	    </div>
             </div>
             <div id="upBtn" class="d-none">
@@ -215,27 +269,32 @@ function renderProducts(productsObj) {
         html += `
             <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mt-4">
             <div class="card text-center h-100">
-                <div class="h-100 d-flex align-items-center justify-content-center p-2">
-                    <img src="${productsObj[key].pic}" class="img-fluid">
+                <div class="h-100 d-flex align-items-center justify-content-center p-2 overflow-hidden">
+                    <img class="w-100" src="./assets/pics/${key}/${productsObj[key].pics.split(' ')[0]}">
                 </div>
                 <div class="card-body">
                 <h4 class="card-title">${productsObj[key].name}</h4>
                 <p>Price: ${productsObj[key].price} euro</p>
                 </div>
-                <div class="card-footer">
-                    <button class="detailsBtn btn btn-dark" data-key="${key}">Details</button>
+                <div class="card-footer d-flex">
+                    <button class="detailsBtn btn btn-dark flex-fill" data-key="${key}">Details</button>
+                    <button class="addBtn btn btn-success ml-2" data-key="${key}"><i class="fas fa-shopping-cart"></i></button>
                 </div>
                 </div>
             </div>    
         `;
     }
     html += `
-    </div>
-    <div class="p-5"></div>
-    `;
+        </div>
+        <div id="footer" class="p-5"></div>
+        `;
     div.innerHTML = html
 
     let buttons = div.querySelectorAll('.detailsBtn');
+    for (let element of buttons) {
+        element.addEventListener('click', userInteraction);
+    }
+    buttons = div.querySelectorAll('.addBtn');
     for (let element of buttons) {
         element.addEventListener('click', userInteraction);
     }
@@ -243,19 +302,21 @@ function renderProducts(productsObj) {
     document.body.appendChild(div);
 }
 
-function findProducts(parameter) {
+function findProducts(string) {
     let foundProducts = {};
-    for (let key in products) {
-        if (products[key].cat === parameter) {
-            foundProducts[key] = products[key]
+    string.split(' ').forEach(function (item) {
+        for (let key in products) {
+            if (products[key].cat === item) {
+                foundProducts[key] = products[key]
+            }
+            if (products[key].tags.split(' ').includes(item)) {
+                foundProducts[key] = products[key]
+            }
+            if (products[key].name.toLowerCase().split(' ').includes(item)) {
+                foundProducts[key] = products[key]
+            }
         }
-        if (products[key].tags.split(',').includes(parameter)) {
-            foundProducts[key] = products[key]
-        }
-        if (products[key].name.toLowerCase().split(' ').includes(parameter)) {
-            foundProducts[key] = products[key]
-        }
-    }
+    });
     return foundProducts;
 }
 
@@ -287,7 +348,7 @@ function renderCarousel() {
     let div = document.createElement('div');
     div.className = 'flex-fill';
     let html = `
-    <div id="discounts" class="carousel slide h-100" data-ride="carousel" data-interval="5000">
+    <div id="discounts" class="carousel slide h-100" data-ride="carousel" data-interval="3000">
     <ol class="carousel-indicators">
         <li data-target="#discounts" data-slide-to="0" class="active"></li>
         <li data-target="#discounts" data-slide-to="1"></li>
@@ -295,7 +356,7 @@ function renderCarousel() {
         <li data-target="#discounts" data-slide-to="3"></li>
     </ol>
     <div class="carousel-inner h-100">
-        <div class="carousel-item h-100 active" style="background-image:url('https://images.unsplash.com/photo-1506091618538-5c362f734eab?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1952&q=80'); background-size: cover; background-position: center;">
+        <div class="carousel-item h-100 active" style="background-image:url('./assets/pics/discounts/img1.jpg'); background-size: cover; background-position: center;">
             <div class="h-100 d-flex align-items-center justify-content-center">
                 <div class="bg-white-50 p-3 p-lg-5 text-center">
                     <h1 class="display-4">30% discount!</h1>
@@ -304,7 +365,7 @@ function renderCarousel() {
                 </div>
             </div>
         </div>
-        <div class="carousel-item h-100" style="background-image:url('https://images.unsplash.com/photo-1491897554428-130a60dd4757?ixlib=rb-1.2.1&auto=format&fit=crop&w=2000&q=80'); background-size: cover; background-position: center;">
+        <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img2.jpg'); background-size: cover; background-position: center;">
             <div class="h-100 d-flex align-items-center justify-content-center">
                 <div class="bg-white-50 p-3 p-lg-5 text-center">
                     <h1 class="display-4">25% discount!</h1>
@@ -313,7 +374,7 @@ function renderCarousel() {
                 </div>
             </div>
         </div>
-        <div class="carousel-item h-100" style="background-image:url('https://images.unsplash.com/photo-1484327973588-c31f829103fe?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1952&q=80'); background-size: cover; background-position: center;">
+        <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img3.jpg'); background-size: cover; background-position: center;">
             <div class="h-100 d-flex align-items-center justify-content-center">
                 <div class="bg-white-50 p-3 p-lg-5 text-center">
                     <h1 class="display-4">30% discount!</h1>
@@ -322,7 +383,7 @@ function renderCarousel() {
                 </div>
             </div>
         </div>
-        <div class="carousel-item h-100" style="background-image:url('https://images.unsplash.com/photo-1517466121016-3f7e7107c756?ixlib=rb-1.2.1&auto=format&fit=crop&w=1950&q=80'); background-size: cover; background-position: center;">
+        <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img4.jpg'); background-size: cover; background-position: center;">
             <div class="h-100 d-flex align-items-center justify-content-center">
                 <div class="bg-white-50 p-3 p-lg-5 text-center">
                     <h1 class="display-4">50% discount!</h1>

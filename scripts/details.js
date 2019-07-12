@@ -19,6 +19,7 @@ getProductDetails()
         if (product) {
             syncCart();
             renderDetails();
+            renderImgCarousel();
             showCartInfo();
         } else {
             alert();
@@ -97,9 +98,9 @@ function clearLoading() {
 
 function confirm() {
     let div = document.createElement('div');
-    div.className = 'alert alert-success text-center m-0';
+    div.className = 'alert alert-success text-center m-0 my-fixed-centered p-4';
     div.innerHTML = `Product <b>${product.name}</b> added to your cart!`;
-    document.querySelector('#confirm').append(div);
+    document.body.append(div);
     setTimeout(function () {
         div.parentElement.removeChild(div);
     }, 3000);
@@ -144,8 +145,8 @@ function addToCart() {
     if (cart[key])
         cart[key].qty += qty;
     else {
-        product.qty = qty;
         cart[key] = product;
+        cart[key].qty = qty;
     }
     localStorage.setItem('cart', JSON.stringify(cart));
 }
@@ -157,15 +158,15 @@ function renderDetails() {
     }
     div = document.createElement('div');
     div.id = 'details';
-    div.className = 'container p-0 position-relative';
+    div.className = 'container p-0 pt-4 pt-lg-5 position-relative';
     let html = `
-    <div class="row no-gutters justify-content-center">
-        <div class="col-12 col-md-6 col-xl-5 p-4 d-flex justify-content-center align-items-center">
-            <img class="w-100" src="${product.pic}">
+    <div class="row no-gutters justify-content-center align-items-stretch">
+        <div class="col-12 col-md-6 col-xl-5 d-flex flex-column justify-content-center align-items-center">
+            <div id="imgCarousel" class="height-fixed align-self-stretch d-flex justify-content-center align-items-center mx-4 overflow-hidden border rounded">
+            </div>
         </div>
-        <div class="col-12 col-md-6 col-xl-5 p-4 d-flex justify-content-center align-items-center">
-            <div class="d-flex flex-column text-center flex-fill">
-                <div id="confirm"></div>
+        <div class="col-12 col-md-6 col-xl-5 d-flex justify-content-center align-items-center">
+            <div class="d-flex flex-column m-4 text-center flex-grow-1">
                 <h3 class="mb-5">${product.name}</h3>
                 <p>${product.desc}</p>
                 <p><b>Price: ${product.price} euro</b></p>
@@ -173,40 +174,39 @@ function renderDetails() {
         `;
     if (cart[key] && product.stock === cart[key].qty)
         html += `
-                <div">
+                <div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
-                            <button id="decreaseBtn" class="btn btn-dark" disabled>-</button>
+                            <button id="decreaseBtn" class="btn btn-dark font-weight-bold" disabled>-</button>
                         </div>
                         <input id="qtyInput" class="form-control text-center" type="text" value="All stock in cart" disabled>
                         <div class="input-group-append">
-                            <button id="increaseBtn" class="btn btn-dark" disabled>+</button>
+                            <button id="increaseBtn" class="btn btn-dark font-weight-bold" disabled>+</button>
                         </div>
                     </div>
-                    </div">
-                    <button id="addBtn" class="btn btn-dark mb-1" disabled>Add to cart</button>
-                    <button id="storeBtn" class="btn btn-dark">Continue shopping</button>
-
+                </div>
+                <button id="addBtn" class="btn btn-dark mb-1" disabled>Add to cart <i class="fas fa-shopping-cart"></i></button>
+                <button id="storeBtn" class="btn btn-success">Continue shopping</button>
             </div>
         </div>
     </div>
         `;
     else if (product.stock > 0)
         html += `
-            <div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <button id="decreaseBtn" class="btn btn-dark">-</button>
+                <div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <button id="decreaseBtn" class="btn btn-dark font-weight-bold">-</button>
+                        </div>
+                        <input id="qtyInput" class="form-control text-center" type="text" value="1" disabled>
+                        <div class="input-group-append">
+                            <button id="increaseBtn" class="btn btn-dark font-weight-bold">+</button>
+                        </div>
                     </div>
-                    <input id="qtyInput" class="form-control text-center" type="text" value="1" disabled>
-                    <div class="input-group-append">
-                        <button id="increaseBtn" class="btn btn-dark">+</button>
-                    </div>
-                </div>
                 </div>  
-                <button id="addBtn" class="btn btn-dark mb-1">Add to cart</button>
+                <button id="addBtn" class="btn btn-success mb-1">Add to cart <i class="fas fa-shopping-cart"></i></button>
                 <button id="storeBtn" class="btn btn-dark">Continue shopping</button>
-            </alert>
+            </div>
         </div>
     </div>
         `;
@@ -215,16 +215,16 @@ function renderDetails() {
             <div>
                 <div class="input-group mb-3">
                     <div class="input-group-prepend">
-                        <button id="decreaseBtn" class="btn btn-dark" disabled>-</button>
+                        <button id="decreaseBtn" class="btn btn-dark font-weight-bold" disabled>-</button>
                     </div>
                     <input id="qtyInput" class="form-control text-center" type="text" value="Out of stock" disabled>
                     <div class="input-group-append">
-                        <button id="increaseBtn" class="btn btn-dark" disabled>+</button>
+                        <button id="increaseBtn" class="btn btn-dark font-weight-bold" disabled>+</button>
                     </div>
                 </div>
             </div>  
-            <button id="addBtn" class="btn btn-dark mb-1" disabled>Add to cart</button>
-            <button id="storeBtn" class="btn btn-dark mb-3">Continue shopping</button>
+            <button id="addBtn" class="btn btn-dark mb-1" disabled>Add to cart <i class="fas fa-shopping-cart"></i></button>
+            <button id="storeBtn" class="btn btn-success mb-3">Continue shopping</button>
         </div>
     </div>
 </div>
@@ -245,7 +245,7 @@ function renderHeader() {
     div.className = 'd-flex flex-column';
     let html = `
         <div class="container-fluid p-0">
-        	<div class="row no-gutters py-3 px-5 bg-white border-bottom">
+        	<div class="row no-gutters py-3 px-4 px-lg-5 bg-white border-bottom">
         	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
         	        <h1 id="logo" class="text-dark text-center font-weight-light">The Fashion Store</h1>
         	    </div>
@@ -257,13 +257,11 @@ function renderHeader() {
                         </div>
         	        </div>
         	    </div>
-        	    <div class="col-12 col-lg-12 col-xl-auto pl-md-3 pl-xl-5 d-flex align-items-center justify-content-center justify-content-lg-end">
-        	        <div>
-                        <button id="cartBtn" class="btn btn-outline-dark">
-                        <i class="fas fa-shopping-cart"></i> Shopping cart <span id="cartItems" class="badge badge-pill badge-danger font-weight-bolder"></span>
-                        </button>
-        	            <button id="adminBtn" class="btn btn-outline-dark ml-2"><i class="fas fa-lock"></i> Admin</button>
-        	        </div>
+        	    <div class="col-12 col-lg-12 col-xl-auto pl-xl-5 d-flex align-items-center justify-content-center justify-content-lg-end">
+                    <button id="cartBtn" class="btn btn-outline-dark flex-grow-1 flex-lg-grow-0">
+                    <i class="fas fa-shopping-cart"></i> Shopping cart <span id="cartItems" class="badge badge-pill badge-danger font-weight-bolder"></span>
+                    </button>
+                    <button id="adminBtn" class="btn btn-outline-dark ml-2"><i class="fas fa-lock"></i> Admin</button>
         	    </div>
             </div>
         </div>
@@ -276,4 +274,41 @@ function renderHeader() {
     div.querySelector('#adminBtn').addEventListener('click', userInteraction);
 
     document.body.appendChild(div);
+}
+
+function renderImgCarousel() {
+    let counter1 = 0;
+    let counter2 = 0;
+    let html = `
+    <div id="carousel" class="carousel slide h-100 w-100" data-ride="carousel" data-interval="2000">
+    <ol class="carousel-indicators">
+        ${product.pics.split(' ').map(() => {
+            let html = `
+            <li data-target="#carousel" data-slide-to="${counter1}" class="${(counter1===0)?'active':''}"></li>
+            `;
+            counter1++;
+            return html;
+        }).join('')}
+    </ol>
+        <div class="carousel-inner h-100">
+        ${product.pics.split(' ').map(pic => {
+            let html = `
+            <div class="carousel-item ${(counter2===0)?'active':''} h-100" style="background: url('../assets/pics/${key}/${pic}') center no-repeat; background-size: contain;">
+            </div>`;
+            counter2++;
+            return html;
+        }).join('')}
+        </div>
+        <a class="carousel-control-prev" href="#carousel" role="button" data-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="sr-only bg-danger">Previous</span>
+        </a>
+        <a class="carousel-control-next" href="#carousel" role="button" data-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="sr-only">Next</span>
+        </a>
+    </div>
+    `;
+    document.querySelector('#imgCarousel').innerHTML = html;
+    $('.carousel').carousel();
 }

@@ -16,7 +16,7 @@ if (Object.keys(cart).length > 0) {
             clearLoading();
             syncCart();
             showCartInfo();
-            if(!updateCart()){
+            if (!updateCart()) {
                 renderCart();
             }
         })
@@ -25,7 +25,7 @@ if (Object.keys(cart).length > 0) {
         });
 } else {
     showCartInfo();
-    renderCart();    
+    renderCart();
 }
 
 function userInteraction(event) {
@@ -52,9 +52,9 @@ function userInteraction(event) {
     }
     if (this.id === 'orderBtn') {
         placeOrder();
-    }    
-    if (event.target.classList.contains('increaseBtn')) {
-        let key = event.target.dataset.key;
+    }
+    if (this.classList.contains('increaseBtn')) {
+        let key = this.dataset.key;
         if (products[key].stock > cart[key].qty) {
             cart[key].qty++;
             localStorage.setItem('cart', JSON.stringify(cart));
@@ -62,8 +62,8 @@ function userInteraction(event) {
             renderCart();
         }
     }
-    if (event.target.classList.contains('decreaseBtn')) {
-        let key = event.target.dataset.key;
+    if (this.classList.contains('decreaseBtn')) {
+        let key = this.dataset.key;
         if (cart[key].qty > 1) {
             cart[key].qty--;
             localStorage.setItem('cart', JSON.stringify(cart));
@@ -71,8 +71,8 @@ function userInteraction(event) {
             renderCart();
         }
     }
-    if (event.target.classList.contains('removeBtn')) {
-        let key = event.target.dataset.key;
+    if (this.classList.contains('removeBtn')) {
+        let key = this.dataset.key;
         delete cart[key];
         localStorage.setItem('cart', JSON.stringify(cart));
         showCartInfo();
@@ -143,14 +143,15 @@ function renderCart() {
         let div = document.createElement('div');
         div.id = 'cartProducts';
         let html = `
-        <div class="col-12 col-lg-8 col-xl-6 flex-column mx-auto p-0">
+        <div class="col-12 col-lg-8 flex-column mx-auto p-0">
         <table class="table m-0 mt-5 text-center">
         <thead>
             <tr>
                 <th class="border-0">Product</th>
                 <th class="border-0">Price</th>
+                <th class="border-0 d-none d-lg-table-cell">Stock</th>
                 <th class="border-0">Qty</th>
-                <th class="border-0">Subtotal</th>
+                <th class="border-0 d-none d-md-table-cell">Subtotal</th>
                 <th class="border-0"></th>
             </tr>
         </thead>
@@ -162,19 +163,25 @@ function renderCart() {
                 <tr>
                     <th><a href="../pages/details.html?key=${key}">${cart[key].name}</a></th>
                     <td>${cart[key].price} euro</td>
+                    <td class="d-none d-lg-table-cell">${cart[key].stock} pcs</td>
                     <td>
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <button class="decreaseBtn btn btn-dark"  data-key = "${key}">-</button>
+                                <button class="decreaseBtn btn btn-dark font-weight-bold"  data-key = "${key}">-</button>
                             </div>
                             <input class="qtyInput form-control text-center" type="text" value="${cart[key].qty}" disabled>
                             <div class="input-group-append">
-                                <button class="increaseBtn btn btn-dark"  data-key = "${key}">+</button>
+                                <button class="increaseBtn btn btn-dark font-weight-bold"  data-key = "${key}">+</button>
                             </div>
                         </div>
                     </td>
-                    <td>${subtotal} euro</td>
-                    <td><button data-key = "${key}" class ="removeBtn btn btn-danger">Remove</button></td>
+                    <td class="d-none d-md-table-cell">${subtotal} euro</td>
+                    <td>
+                        <button data-key = "${key}" class ="removeBtn btn btn-danger text-nowrap">
+                            <span class="d-none d-md-inline">Remove</span>
+                            <i class="fas fa-trash-alt"></i>
+                        </button>
+                    </td>
                 </tr>    
             `;
             totalProducts += cart[key].qty;
@@ -188,8 +195,8 @@ function renderCart() {
         <p>Taxes: 0 %</p>
         <p>Shipping: 0 euro</p>
         <p><b>Total price: ${totalPrice} euro</b></p>
-        <button id="storeBtn" class="btn btn-dark mx-3 mb-1">Continue shopping</button>
-        <button id="orderBtn" class="btn btn-dark mx-3">Place order</button>
+        <button id="storeBtn" class="btn btn-success mx-3 mb-1">Continue shopping</button>
+        <button id="orderBtn" class="btn btn-dark mx-3">Place order <i class="fas fa-credit-card ml-2"></i></button>
 
         </div>
         </div>
@@ -198,7 +205,15 @@ function renderCart() {
 
         div.querySelector('#storeBtn').addEventListener('click', userInteraction);
         div.querySelector('#orderBtn').addEventListener('click', userInteraction);
-        div.querySelector('table').addEventListener('click', userInteraction);
+        div.querySelectorAll('.increaseBtn').forEach(element => {
+           element.addEventListener('click', userInteraction); 
+        });
+        div.querySelectorAll('.decreaseBtn').forEach(element => {
+           element.addEventListener('click', userInteraction); 
+        });
+        div.querySelectorAll('.removeBtn').forEach(element => {
+           element.addEventListener('click', userInteraction); 
+        });
 
         document.body.appendChild(div);
     } else {
@@ -207,7 +222,7 @@ function renderCart() {
         div.innerHTML = `
         <div class="alert alert-light text-center border shadow p-5">
         <h4>Shopping cart is empty!</h4>
-        <button id="storeBtn" class="btn btn-dark mt-3">Continue shopping</button>
+        <button id="storeBtn" class="btn btn-success mt-3">Continue shopping</button>
         </div>
         `;
 
@@ -324,7 +339,7 @@ function renderHeader() {
     div.className = 'd-flex flex-column';
     let html = `
         <div class="container-fluid p-0">
-        	<div class="row no-gutters py-3 px-5 bg-white border-bottom">
+        	<div class="row no-gutters py-3 px-4 px-lg-5 bg-white border-bottom">
         	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
         	        <h1 id="logo" class="text-dark text-center font-weight-light">The Fashion Store</h1>
         	    </div>
@@ -336,13 +351,11 @@ function renderHeader() {
                         </div>
         	        </div>
         	    </div>
-        	    <div class="col-12 col-lg-12 col-xl-auto pl-md-3 pl-xl-5 d-flex align-items-center justify-content-center justify-content-lg-end">
-        	        <div>
-                        <button id="cartBtn" class="btn btn-outline-dark">
-                        <i class="fas fa-shopping-cart"></i> Shopping cart <span id="cartItems" class="badge badge-pill badge-danger font-weight-bolder"></span>
-                        </button>
-        	            <button id="adminBtn" class="btn btn-outline-dark ml-2"><i class="fas fa-lock"></i> Admin</button>
-        	        </div>
+        	    <div class="col-12 col-lg-12 col-xl-auto pl-xl-5 d-flex align-items-center justify-content-center justify-content-lg-end">
+                    <button id="cartBtn" class="btn btn-outline-dark flex-grow-1 flex-lg-grow-0">
+                    <i class="fas fa-shopping-cart"></i> Shopping cart <span id="cartItems" class="badge badge-pill badge-danger font-weight-bolder"></span>
+                    </button>
+                    <button id="adminBtn" class="btn btn-outline-dark ml-2"><i class="fas fa-lock"></i> Admin</button>
         	    </div>
             </div>
         </div>
