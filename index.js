@@ -378,17 +378,17 @@ function renderNav() {
     div.className = 'bg-white';
     let html = `
     <div class="sticky-top bg-white shadow-sm">
-        <ul class="nav py-3">
-            <li class="nav-item col-12 col-md-3 text-center">
+        <ul class="nav no-gutters pt-3 pb-2">
+            <li class="nav-item col-12 col-sm-3 pb-2 pb-sm-0 text-center">
                 <button id="allBtn" class="btn btn-dark nav-btn border-0 text-nowrap">All products</button>
             </li>    
-            <li class="nav-item col-4 col-md-3 text-center">
+            <li class="nav-item col-4 col-sm-3 text-center">
                 <button id="clothingBtn" class="btn btn-outline-dark nav-btn border-0">Clothing</button>
             </li>
-            <li class="nav-item col-4 col-md-3 text-center">
+            <li class="nav-item col-4 col-sm-3 text-center">
                 <button id="footwearBtn" class="btn btn-outline-dark nav-btn border-0">Footwear</button>
             </li>
-            <li class="nav-item col-4 col-md-3 text-center">
+            <li class="nav-item col-4 col-sm-3 text-center">
                 <button id="accessoriesBtn" class="btn btn-outline-dark nav-btn border-0">Accessories</button>
             </li>
         </ul>
@@ -427,8 +427,8 @@ function renderProducts() {
             <div class="card text-center h-100">
                 <img class="card-img-top pointer" data-key="${key}" data-index="${products.indexOf(product)}" src="./assets/pics/${key}/${product[1].pics.split(/\s+/)[0]}">
                 <div class="card-body d-flex flex-column">
-                <h4 class="card-title">${product[1].name}</h4>
-                <p class="mt-auto mb-0">Price: ${product[1].price} euro</p>
+                    <h4 class="card-title">${product[1].name}</h4>
+                    <p class="mt-auto mb-0">Price: ${product[1].price} euro</p>
                 </div>
                 <div class="card-footer d-flex">
                     <button class="detailsBtn btn btn-dark flex-grow-1" data-key="${key}">Details</button>
