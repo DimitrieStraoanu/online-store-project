@@ -503,7 +503,7 @@ function clearLoading() {
 
 function renderCarousel() {
     let div = document.createElement('div');
-    div.className = 'flex-fill';
+    div.className = 'flex-grow-1';
     let html = `
     <div id="discounts" class="carousel slide h-100" data-ride="carousel" data-interval="3000">
     <ol class="carousel-indicators">
