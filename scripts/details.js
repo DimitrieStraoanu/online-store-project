@@ -248,28 +248,28 @@ function renderHeader() {
     div.id = 'header';
     div.className = 'd-flex flex-column';
     let html = `
-        <div class="container-fluid p-0">
-        	<div class="row no-gutters py-3 px-4 px-lg-5 bg-white border-bottom">
-        	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
-        	        <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</h1>
-        	    </div>
-        	    <div class="col-12 col-md col-xl px-xl-5 py-3 d-flex align-items-center justify-content-center">
-                    <div class="input-group">
-                        <input type="text" id="searchInput" class="form-control border-secondary" aria-label="Recipient's username" aria-describedby="button-addon2">
-                        <div class="input-group-append">
-                        <button class="btn btn-outline-dark" type="button" id="searchBtn"><i class="fas fa-search"></i> <span>Search</span></button>
-                        </div>
-        	        </div>
-        	    </div>
-        	    <div class="col-12 col-lg-12 col-xl-auto pl-xl-5 d-flex align-items-center justify-content-center justify-content-lg-end">
-                    <button id="cartBtn" class="btn btn-outline-dark flex-grow-1 flex-lg-grow-0">
-                    <i class="fas fa-shopping-cart"></i> Shopping cart <span id="cartItems" class="badge badge-pill badge-danger font-weight-bolder"></span>
-                    </button>
-                    <button id="adminBtn" class="btn btn-outline-dark ml-2"><i class="fas fa-lock"></i> Admin</button>
-        	    </div>
+    <div class="container-fluid p-0">
+        <div class="row no-gutters py-3 px-4 px-xl-5 py-xl-4 bg-white border-bottom">
+            <div class="col-12 col-sm col-xl-auto order-xl-1 pb-2 pb-sm-0 d-flex align-items-center justify-content-center justify-content-sm-start">
+                <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</span></h1>
+            </div>
+            <div class="col-12 col-sm-auto col-xl-auto order-xl-3 d-flex align-items-center justify-content-center justify-content-sm-end">
+                <button id="adminBtn" class="btn btn-outline-dark flex-grow-1 flex-sm-grow-0"><i class="fas fa-lock"></i> <span class="d-sm-none d-md-inline">Admin</span></button>
+                <button id="cartBtn" class="btn btn-outline-dark flex-grow-1 flex-sm-grow-0 position-relative ml-2">
+                <i class="fas fa-shopping-cart"></i> <span class="d-sm-none d-md-inline">Shopping cart</span> <span id="cartItems" class="rounded-pill px-2 border border-dark badge-danger font-weight-bold my-badge"></span>
+                </button>
+            </div>
+            <div class="col-12 col-xl pt-2 pt-xl-0 px-xl-5 order-xl-2 d-flex align-items-center justify-content-center">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control border-secondary" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                    <button class="btn btn-outline-dark" type="button" id="searchBtn"><i class="fas fa-search"></i> <span class="d-none d-sm-inline">Search</span></button>
+                    </div>
+                </div>
             </div>
         </div>
-        `;
+    </div>
+    `;
     div.innerHTML = html;
 
     div.querySelector('#logo').addEventListener('click', userInteraction);

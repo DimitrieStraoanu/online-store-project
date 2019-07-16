@@ -7,7 +7,7 @@
 }
 
 #footer {
-    height: 200px;
+    height: 100px;
 }
 
 #logo {
@@ -70,6 +70,19 @@
 .h70px {
     height: 70px;
 }
+
+.my-badge {
+    position: absolute;
+    display: inline-block;
+    right: 0;
+    top: 0;
+    transform: translate(50%, -50%);
+    height: 20px;
+    line-height: 15.5px;
+    vertical-align: middle;
+    padding: 0 5px !important;
+}
+
 
 .my-fullscreen {
     z-index: 10000;

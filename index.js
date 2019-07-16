@@ -1,6 +1,8 @@
+let initialProducts;
 let products;
 let cart;
 let intervalStarted;
+let timeout;
 let initialHeight;
 let selectedBtn;
 initCart();
@@ -16,7 +18,8 @@ getProducts()
             console.log(response.statusText);
     })
     .then(function (data) {
-        products = data;
+        initialProducts = Object.entries(data);
+        products = [...initialProducts];
         syncCart();
         clearLoading();
         renderCarousel();
@@ -32,11 +35,13 @@ getProducts()
 function userInteraction() {
     if (event.type === 'mouseover') {
         let key = this.dataset.key;
-        this.src = `./assets/pics/${key}/${products[key].pics.split(/\s+/)[1]}`
+        let index = this.dataset.index;
+        this.src = `./assets/pics/${key}/${products[index][1].pics.split(/\s+/)[1]}`
     }
     if (event.type === 'mouseout') {
         let key = this.dataset.key;
-        this.src = `./assets/pics/${key}/${products[key].pics.split(/\s+/)[0]}`
+        let index = this.dataset.index;
+        this.src = `./assets/pics/${key}/${products[index][1].pics.split(/\s+/)[0]}`
     }
     if (event.type === 'scroll') {
         let distFromTop = document.querySelector('#nav').getBoundingClientRect().top;
@@ -95,13 +100,17 @@ function userInteraction() {
         if (this.id === 'adminBtn') {
             location.assign('../pages/admin.html');
         }
+        //search
         if (this.id === 'searchBtn') {
             let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
             if (searchString) {
                 let foundProducts = findProducts(searchString);
-                if (Object.keys(foundProducts).length > 0) {
+                if (foundProducts.length > 0) {
                     document.querySelector('#searchInput').setAttribute('placeholder', '');
-                    renderProducts(foundProducts);
+                    products = foundProducts;
+                    deselectNavBtns();
+                    deselectSortBtns();
+                    renderProducts();
                     document.querySelector('#searchInput').value = '';
                     scroll();
                 } else {
@@ -114,7 +123,6 @@ function userInteraction() {
             scroll();
         }
         //sorting
-        if (this.id === 'arrowBtn') {}
         if (this.id === 'sortNameBtn') {
             let sortPriceBtn = document.querySelector('#sortPriceBtn');
             sortPriceBtn.classList.remove('text-dark', 'font-weight-bold');
@@ -125,6 +133,13 @@ function userInteraction() {
             if (selectedBtn === 'sortNameBtn') {
                 this.querySelector('i').classList.toggle('rotated');
             }
+            if (this.querySelector('i').classList.contains('rotated')) {
+                direction = -1;
+            } else {
+                direction = 1;
+            }
+            sortProducts('name', direction)
+            renderProducts();
             selectedBtn = 'sortNameBtn';
         }
         if (this.id === 'sortPriceBtn') {
@@ -137,42 +152,59 @@ function userInteraction() {
             if (selectedBtn === 'sortPriceBtn') {
                 this.querySelector('i').classList.toggle('rotated');
             }
+            if (this.querySelector('i').classList.contains('rotated')) {
+                direction = -1;
+            } else {
+                direction = 1;
+            }
+            sortProducts('price', direction)
+            renderProducts();
             selectedBtn = 'sortPriceBtn';
 
         }
         //categories
         if (this.id === 'allBtn') {
             deselectNavBtns();
+            deselectSortBtns();
             selectBtn(this);
             scroll();
-            renderProducts(products);
+            products = [...initialProducts];
+            renderProducts();
         }
         if (this.id === 'clothingBtn' || this.id === 'discounts-3') {
             deselectNavBtns();
+            deselectSortBtns()
             if (this.id === 'clothingBtn') {
                 selectBtn(this);
             }
             scroll();
-            renderProducts(findProducts('clothing'));
+            products = findProducts('clothing');
+            renderProducts();
         }
         if (this.id === 'footwearBtn') {
             deselectNavBtns();
+            deselectSortBtns();
             selectBtn(this);
             scroll();
-            renderProducts(findProducts('footwear'));
+            products = findProducts('footwear');
+            renderProducts();
         }
         if (this.id === 'discounts-4' || this.id === 'discounts-2') {
             deselectNavBtns();
+            deselectSortBtns();
             scroll();
-            renderProducts(findProducts('footwear'));
+            products = findProducts('footwear');
+            renderProducts();
         }
         if (this.id === 'accessoriesBtn' || this.id === 'discounts-1') {
             deselectNavBtns();
+            deselectSortBtns();
             if (this.id === 'accessoriesBtn') {
                 selectBtn(this);
             }
             scroll();
-            renderProducts(findProducts('accessories'));
+            products = findProducts('accessories');
+            renderProducts();
         }
         if (this.classList.contains('detailsBtn') || this.classList.contains('card-img-top')) {
             location.assign(`./pages/details.html?key=${this.dataset.key}`);
@@ -192,13 +224,27 @@ function deselectNavBtns() {
     });
 }
 
+function deselectSortBtns() {
+    let sortPriceBtn = document.querySelector('#sortPriceBtn');
+    sortPriceBtn.classList.remove('text-dark', 'font-weight-bold');
+    sortPriceBtn.classList.add('text-secondary');
+    sortPriceBtn.querySelector('i').classList.remove('rotated');
+    let sortNameBtn = document.querySelector('#sortNameBtn');
+    sortNameBtn.classList.remove('text-dark', 'font-weight-bold');
+    sortNameBtn.classList.add('text-secondary');
+    sortNameBtn.querySelector('i').classList.remove('rotated');
+    selectedBtn = '';
+}
+
 function checkSearchParams() {
     let url = new URL(document.URL);
     let searchString = url.searchParams.get('search');
     if (searchString) {
         let foundProducts = findProducts(searchString);
-        if (Object.keys(foundProducts).length > 0) {
-            renderProducts(foundProducts);
+        if (foundProducts.length > 0) {
+            products = foundProducts;
+            deselectNavBtns();
+            renderProducts();
             document.querySelector('#searchInput').value = '';
             scroll();
         } else {
@@ -247,8 +293,9 @@ function showCartInfo() {
 
 function quickAddToCart(event) {
     let key = event.currentTarget.dataset.key;
-    if (!cart[key] && products[key].stock > 0) {
-        cart[key] = products[key];
+    let index = event.currentTarget.dataset.index;
+    if (!cart[key] && products[index][1].stock > 0) {
+        cart[key] = products[index][1];
         cart[key].qty = 1;
     }
     localStorage.setItem('cart', JSON.stringify(cart));
@@ -257,23 +304,25 @@ function quickAddToCart(event) {
 function confirm(event) {
     let confirm = document.querySelector('#confirm');
     if (confirm) {
+        clearTimeout(timeout);
         confirm.parentElement.removeChild(confirm);
     }
     let key = event.currentTarget.dataset.key;
+    let index = event.currentTarget.dataset.index;
     let div = document.createElement('div');
     div.id = 'confirm';
     div.className = 'my-fixed-centered bg-white text-success border shadow rounded d-flex align-items-center text-center p-4';
     let html = '';
     if (cart[key]) {
-        html = `<span>Product <b>${products[key].name}</b> already in cart. Go to cart to add more.</span>`;
-    } else if (!cart[key] && products[key].stock > 0) {
-        html = `<i class="far fa-check-circle fa-2x"></i> <span class="ml-3">Product <b>${products[key].name}</b> added to your cart!</span>`;
+        html = `<span>Product <b>${products[index][1].name}</b> already in cart. Go to cart to add more.</span>`;
+    } else if (!cart[key] && products[index][1].stock > 0) {
+        html = `<i class="far fa-check-circle fa-2x"></i> <span class="ml-3">Product <b>${products[index][1].name}</b> added to your cart!</span>`;
     } else {
-        html = `<i class="fas fa-ban fa-2x text-danger"></i> <span class="text-danger ml-3">Product <b>${products[key].name}</b> out of stock!</span>`;
+        html = `<i class="fas fa-ban fa-2x text-danger"></i> <span class="text-danger ml-3">Product <b>${products[index][1].name}</b> out of stock!</span>`;
     }
     div.innerHTML = html;
     document.body.appendChild(div);
-    setTimeout(function () {
+    timeout = setTimeout(function () {
         div.parentElement.removeChild(div);
     }, 3000);
 }
@@ -284,30 +333,30 @@ function renderHeader() {
     div.className = 'vh-100 d-flex flex-column overflow-hidden';
     let html = `
         <div class="container-fluid p-0">
-        	<div class="row no-gutters py-3 px-4 px-lg-5 bg-white border-bottom">
-        	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
+        	<div class="row no-gutters py-3 px-4 px-xl-5 py-xl-4 bg-white border-bottom">
+        	    <div class="col-12 col-sm col-xl-auto order-xl-1 pb-2 pb-sm-0 d-flex align-items-center justify-content-center justify-content-sm-start">
         	        <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</span></h1>
         	    </div>
-        	    <div class="col-12 col-md col-xl px-xl-5 py-3 d-flex align-items-center justify-content-center">
+                <div class="col-12 col-sm-auto col-xl-auto order-xl-3 d-flex align-items-center justify-content-center justify-content-sm-end">
+                    <button id="adminBtn" class="btn btn-outline-dark flex-grow-1 flex-sm-grow-0"><i class="fas fa-lock"></i> <span class="d-sm-none d-md-inline">Admin</span></button>
+                    <button id="cartBtn" class="btn btn-outline-dark flex-grow-1 flex-sm-grow-0 position-relative ml-2">
+                    <i class="fas fa-shopping-cart"></i> <span class="d-sm-none d-md-inline">Shopping cart</span> <span id="cartItems" class="rounded-pill px-2 border border-dark badge-danger font-weight-bold my-badge"></span>
+                    </button>
+                </div>
+        	    <div class="col-12 col-xl pt-2 pt-xl-0 px-xl-5 order-xl-2 d-flex align-items-center justify-content-center">
                     <div class="input-group">
                         <input type="text" id="searchInput" class="form-control border-secondary" aria-label="Recipient's username" aria-describedby="button-addon2">
                         <div class="input-group-append">
-                        <button class="btn btn-outline-dark" type="button" id="searchBtn"><i class="fas fa-search"></i> <span>Search</span></button>
+                        <button class="btn btn-outline-dark" type="button" id="searchBtn"><i class="fas fa-search"></i> <span class="d-none d-sm-inline">Search</span></button>
                         </div>
         	        </div>
-        	    </div>
-        	    <div class="col-12 col-lg-12 col-xl-auto pl-xl-5 d-flex align-items-center justify-content-center justify-content-lg-end">
-                    <button id="cartBtn" class="btn btn-outline-dark flex-grow-1 flex-lg-grow-0">
-                    <i class="fas fa-shopping-cart"></i> Shopping cart <span id="cartItems" class="badge badge-pill badge-danger font-weight-bolder"></span>
-                    </button>
-                    <button id="adminBtn" class="btn btn-outline-dark ml-2"><i class="fas fa-lock"></i> Admin</button>
         	    </div>
             </div>
             <div id="upBtn" class="d-none bg-white rounded shadow">
                 <button class="btn btn-outline-dark border-0"><i class="fas fa-chevron-up fa-3x"></i></button>
             </div>    
         </div>
-        <div id="showProductsBtn" class="pointer text-secondary d-flex align-items-center justify-content-center"><i class="fas fa-ellipsis-h"></i></div>
+        <div id="showProductsBtn" class="pointer text-dark d-flex align-items-center justify-content-center"><i class="fas fa-grip-lines"></i></div>
         `;
     div.innerHTML = html;
 
@@ -326,11 +375,10 @@ function renderNav() {
     div.id = 'nav';
     div.className = 'bg-white';
     let html = `
-    <div class="sticky-top bg-white border-bottom pt-3">
-        <ul class="nav">
+    <div class="sticky-top bg-white shadow-sm">
+        <ul class="nav py-3">
             <li class="nav-item col-12 col-md-3 text-center">
                 <button id="allBtn" class="btn btn-dark nav-btn border-0 text-nowrap">All products</button>
-                <hr class="d-md-none">
             </li>    
             <li class="nav-item col-4 col-md-3 text-center">
                 <button id="clothingBtn" class="btn btn-outline-dark nav-btn border-0">Clothing</button>
@@ -342,14 +390,9 @@ function renderNav() {
                 <button id="accessoriesBtn" class="btn btn-outline-dark nav-btn border-0">Accessories</button>
             </li>
         </ul>
-        <div id="sortBar">
-            <hr class="mb-0">    
-            <div class="px-3">
-                <div class="d-flex justify-content-end align-items-center">
-                <div id="sortNameBtn" class="pointer text-secondary">Sort by name <i class="fas fa-chevron-circle-up"></i></div>
-                <div id="sortPriceBtn" class="ml-3 pointer text-secondary">Sort by price <i class="fas fa-chevron-circle-up"></i></div>
-                </div> 
-            </div>   
+        <div id="sortBar" class="border-top border-bottom py-2 d-flex justify-content-center align-items-center justify-content-lg-end pr-lg-4">
+            <div id="sortNameBtn" class="pointer text-secondary">Sort by name <i class="fas fa-arrow-up"></i></div>
+            <div id="sortPriceBtn" class="ml-3 pointer text-secondary">Sort by price <i class="fas fa-arrow-up"></i></div>
         </div>
     </div>
     `;
@@ -366,35 +409,37 @@ function renderNav() {
     document.body.appendChild(div);
 }
 
-function renderProducts(productsObj) {
-    let products = document.querySelector('#products');
-    if (products) {
-        products.parentElement.removeChild(products);
+function renderProducts() {
+    let productsHtml = document.querySelector('#products');
+    if (productsHtml) {
+        productsHtml.parentElement.removeChild(productsHtml);
     }
     let div = document.createElement('div')
     div.id = 'products';
     div.className = 'container-fluid px-4';
     let html = '<div class="row">';
-    for (let key in productsObj) {
+    for (let product of products) {
+        let key = product[0];
         html += `
-            <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mt-5">
+        <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mt-4">
             <div class="card text-center h-100">
-                <img class="card-img-top pointer" data-key="${key}" src="./assets/pics/${key}/${productsObj[key].pics.split(/\s+/)[0]}">
+                <img class="card-img-top pointer" data-key="${key}" data-index="${products.indexOf(product)}" src="./assets/pics/${key}/${product[1].pics.split(/\s+/)[0]}">
                 <div class="card-body d-flex flex-column">
-                <h4 class="card-title">${productsObj[key].name}</h4>
-                <p class="mt-auto mb-0">Price: ${productsObj[key].price} euro</p>
+                <h4 class="card-title">${product[1].name}</h4>
+                <p class="mt-auto mb-0">Price: ${product[1].price} euro</p>
                 </div>
                 <div class="card-footer d-flex">
                     <button class="detailsBtn btn btn-dark flex-grow-1" data-key="${key}">Details</button>
-                    <button class="addBtn btn btn-success ml-2" data-key="${key}"><i class="fas fa-shopping-cart"></i></button>
+                    <button class="addBtn btn btn-success ml-2" data-key="${key}" data-index="${products.indexOf(product)}"><i class="fas fa-shopping-cart"></i></button>
                 </div>
-                </div>
-            </div>    
+            </div>
+        </div>    
         `;
     }
     html += `
         </div>
-        <div id="footer" class="p-5"></div>
+        <hr>
+        <div id="footer"></div>
         `;
     div.innerHTML = html
 
@@ -417,17 +462,15 @@ function renderProducts(productsObj) {
 }
 
 function findProducts(string) {
-    let foundProducts = {};
-    string.split(/\s+/).forEach(function (item) {
-        for (let key in products) {
-            if (products[key].cat === item) {
-                foundProducts[key] = products[key]
-            }
-            if (products[key].tags.split(/\s+/).includes(item)) {
-                foundProducts[key] = products[key]
-            }
-            if (products[key].name.toLowerCase().split(/\s+/).includes(item)) {
-                foundProducts[key] = products[key]
+    let foundProducts = [];
+    string.split(/\s+/).forEach(function (substring) {
+        for (let product of initialProducts) {
+            if (product[1].cat === substring) {
+                foundProducts.push(product);
+            } else if (product[1].tags.split(/\s+/).includes(substring)) {
+                foundProducts.push(product);
+            } else if (product[1].name.toLowerCase().split(/\s+/).includes(substring)) {
+                foundProducts.push(product);
             }
         }
     });
@@ -472,7 +515,7 @@ function renderCarousel() {
     <div class="carousel-inner h-100">
         <div class="carousel-item h-100 active" style="background-image:url('./assets/pics/discounts/img1.jpg'); background-size: cover; background-position: center;">
             <div class="h-100 d-flex align-items-center justify-content-center">
-                <div class="bg-white-50 p-3 p-lg-5 text-center">
+                <div class="bg-white-50 p-3 p-md-5 text-center">
                     <h1 class="display-4">30% discount!</h1>
                     <h1 class="font-weight-light">for all accessories</h1>
                     <button id="discounts-1" class="btn btn-outline-dark mt-4">Click to shop</button>
@@ -481,7 +524,7 @@ function renderCarousel() {
         </div>
         <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img2.jpg'); background-size: cover; background-position: center;">
             <div class="h-100 d-flex align-items-center justify-content-center">
-                <div class="bg-white-50 p-3 p-lg-5 text-center">
+                <div class="bg-white-50 p-3 p-md-5 text-center">
                     <h1 class="display-4">25% discount!</h1>
                     <h1 class="font-weight-light">for all office shoes</h1>
                     <button id="discounts-2" class="btn btn-outline-dark mt-4">Click to shop</button>
@@ -490,7 +533,7 @@ function renderCarousel() {
         </div>
         <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img3.jpg'); background-size: cover; background-position: center;">
             <div class="h-100 d-flex align-items-center justify-content-center">
-                <div class="bg-white-50 p-3 p-lg-5 text-center">
+                <div class="bg-white-50 p-3 p-md-5 text-center">
                     <h1 class="display-4">30% discount!</h1>
                     <h1 class="font-weight-light">for last year collection</h1>
                     <button id="discounts-3" class="btn btn-outline-dark mt-4">Click to shop</button>
@@ -499,7 +542,7 @@ function renderCarousel() {
         </div>
         <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img4.jpg'); background-size: cover; background-position: center;">
             <div class="h-100 d-flex align-items-center justify-content-center">
-                <div class="bg-white-50 p-3 p-lg-5 text-center">
+                <div class="bg-white-50 p-3 p-md-5 text-center">
                     <h1 class="display-4">50% discount!</h1>
                     <h1 class="font-weight-light">for all sport shoes</h1>
                     <button id="discounts-4" class="btn btn-outline-dark mt-4">Click to shop</button>
@@ -527,8 +570,8 @@ function renderCarousel() {
     $('.carousel').carousel();
 }
 
-function sortProducts(arr, sortParameter, sortDirection) {
-    return arr.sort(function (first, second) {
+function sortProducts(sortParameter, sortDirection) {
+    products.sort(function (first, second) {
         if (first[1][sortParameter] > second[1][sortParameter]) return sortDirection;
         else if (first[1][sortParameter] < second[1][sortParameter]) return -sortDirection;
         else return 0;
