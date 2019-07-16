@@ -89,7 +89,7 @@ function userInteraction() {
             location.assign('./index.html');
         }
         if (this.id === 'cartBtn') {
-            location.assign('../pages/cart.html');
+            location.assign('./pages/cart.html');
         }
         if (this.id === 'upBtn') {
             window.scrollTo({
@@ -98,7 +98,7 @@ function userInteraction() {
             });
         }
         if (this.id === 'adminBtn') {
-            location.assign('../pages/admin.html');
+            location.assign('./pages/admin.html');
         }
         //search
         if (this.id === 'searchBtn') {
