@@ -1,7 +1,11 @@
 let products;
 let cart;
+let intervalStarted;
+let initialHeight;
+let selectedBtn;
 initCart();
 renderHeader();
+initialHeight = document.querySelector('#showProductsBtn').getBoundingClientRect().height;
 showCartInfo();
 showLoading();
 getProducts()
@@ -16,26 +20,58 @@ getProducts()
         syncCart();
         clearLoading();
         renderCarousel();
-        renderProducts(products);
         renderNav();
+        renderProducts(products);
         window.addEventListener('scroll', userInteraction);
         checkSearchParams();
-
     })
     .catch(function (err) {
         console.log(err);
     });
 
 function userInteraction() {
-
+    if (event.type === 'mouseover') {
+        let key = this.dataset.key;
+        this.src = `./assets/pics/${key}/${products[key].pics.split(/\s+/)[1]}`
+    }
+    if (event.type === 'mouseout') {
+        let key = this.dataset.key;
+        this.src = `./assets/pics/${key}/${products[key].pics.split(/\s+/)[0]}`
+    }
     if (event.type === 'scroll') {
-        let distFromTop = document.querySelector('#products').getBoundingClientRect().top - document.querySelector('#nav').getBoundingClientRect().height;
-        if (distFromTop < 0) {
-            document.querySelector('#nav').classList.add('fixed-top');
+        let distFromTop = document.querySelector('#nav').getBoundingClientRect().top;
+        if (distFromTop <= 0) {
             document.querySelector('#upBtn').classList.remove('d-none');
-        } else if (distFromTop > 0) {
-            document.querySelector('#nav').classList.remove('fixed-top');
+        } else {
             document.querySelector('#upBtn').classList.add('d-none');
+        }
+        if (window.pageYOffset > 0) {
+            if (!intervalStarted) {
+                let interval = setInterval(function () {
+                    let height = document.querySelector('#showProductsBtn').getBoundingClientRect().height;
+                    if (height > 0) {
+                        document.querySelector('#showProductsBtn').style.height = `${height-2}px`;
+                    } else if (height === 0) {
+                        clearInterval(interval);
+                        intervalStarted = false;
+                    }
+                }, 5);
+                intervalStarted = true;
+            }
+        }
+        if (window.pageYOffset === 0) {
+            if (!intervalStarted) {
+                let interval = setInterval(function () {
+                    let height = document.querySelector('#showProductsBtn').getBoundingClientRect().height;
+                    if (height < initialHeight) {
+                        document.querySelector('#showProductsBtn').style.height = `${height+2}px`;
+                    } else if (height === initialHeight) {
+                        clearInterval(interval);
+                        intervalStarted = false;
+                    }
+                }, 5);
+                intervalStarted = true;
+            }
         }
     }
     if (event.type === 'click') {
@@ -64,8 +100,7 @@ function userInteraction() {
             if (searchString) {
                 let foundProducts = findProducts(searchString);
                 if (Object.keys(foundProducts).length > 0) {
-                    document.querySelector('#searchInput').setAttribute('placeholder','');
-
+                    document.querySelector('#searchInput').setAttribute('placeholder', '');
                     renderProducts(foundProducts);
                     document.querySelector('#searchInput').value = '';
                     scroll();
@@ -75,34 +110,86 @@ function userInteraction() {
                 }
             }
         }
-        if (this.id === 'allBtn') {
-            renderProducts(products);
+        if (this.id === 'showProductsBtn') {
             scroll();
+        }
+        //sorting
+        if (this.id === 'arrowBtn') {}
+        if (this.id === 'sortNameBtn') {
+            let sortPriceBtn = document.querySelector('#sortPriceBtn');
+            sortPriceBtn.classList.remove('text-dark', 'font-weight-bold');
+            sortPriceBtn.classList.add('text-secondary');
+
+            this.classList.add('text-dark', 'font-weight-bold');
+            this.classList.remove('text-secondary');
+            if (selectedBtn === 'sortNameBtn') {
+                this.querySelector('i').classList.toggle('rotated');
+            }
+            selectedBtn = 'sortNameBtn';
+        }
+        if (this.id === 'sortPriceBtn') {
+            let sortNameBtn = document.querySelector('#sortNameBtn');
+            sortNameBtn.classList.remove('text-dark', 'font-weight-bold');
+            sortNameBtn.classList.add('text-secondary');
+
+            this.classList.add('text-dark', 'font-weight-bold');
+            this.classList.remove('text-secondary');
+            if (selectedBtn === 'sortPriceBtn') {
+                this.querySelector('i').classList.toggle('rotated');
+            }
+            selectedBtn = 'sortPriceBtn';
+
+        }
+        //categories
+        if (this.id === 'allBtn') {
+            deselectNavBtns();
+            selectBtn(this);
+            scroll();
+            renderProducts(products);
         }
         if (this.id === 'clothingBtn' || this.id === 'discounts-3') {
-            renderProducts(findProducts('clothing'));
+            deselectNavBtns();
+            if (this.id === 'clothingBtn') {
+                selectBtn(this);
+            }
             scroll();
+            renderProducts(findProducts('clothing'));
         }
         if (this.id === 'footwearBtn') {
+            deselectNavBtns();
+            selectBtn(this);
+            scroll();
             renderProducts(findProducts('footwear'));
-            scroll();
         }
-        if (this.id === 'discounts-2') {
-            renderProducts(findProducts('office'));
+        if (this.id === 'discounts-4' || this.id === 'discounts-2') {
+            deselectNavBtns();
             scroll();
-        }
-        if (this.id === 'discounts-4') {
-            renderProducts(findProducts('sport'));
-            scroll();
+            renderProducts(findProducts('footwear'));
         }
         if (this.id === 'accessoriesBtn' || this.id === 'discounts-1') {
-            renderProducts(findProducts('accessories'));
+            deselectNavBtns();
+            if (this.id === 'accessoriesBtn') {
+                selectBtn(this);
+            }
             scroll();
+            renderProducts(findProducts('accessories'));
         }
-        if (this.classList.contains('detailsBtn')) {
-            location.assign(`./pages/details.html?key=${event.target.dataset.key}`);
+        if (this.classList.contains('detailsBtn') || this.classList.contains('card-img-top')) {
+            location.assign(`./pages/details.html?key=${this.dataset.key}`);
         }
     }
+}
+
+function selectBtn(that) {
+    that.classList.add('btn-dark');
+    that.classList.remove('btn-outline-dark');
+}
+
+function deselectNavBtns() {
+    document.querySelectorAll('.nav-btn').forEach(element => {
+        element.classList.remove('btn-dark');
+        element.classList.add('btn-outline-dark');
+    });
 }
 
 function checkSearchParams() {
@@ -168,19 +255,24 @@ function quickAddToCart(event) {
 }
 
 function confirm(event) {
+    let confirm = document.querySelector('#confirm');
+    if (confirm) {
+        confirm.parentElement.removeChild(confirm);
+    }
     let key = event.currentTarget.dataset.key;
     let div = document.createElement('div');
-    div.className = 'alert alert-success text-center m-0 my-fixed-centered p-4';
+    div.id = 'confirm';
+    div.className = 'my-fixed-centered bg-white text-success border shadow rounded d-flex align-items-center text-center p-4';
     let html = '';
     if (cart[key]) {
-        html = `Product <b>${products[key].name}</b> already in cart. Go to cart to add more.`;
+        html = `<span>Product <b>${products[key].name}</b> already in cart. Go to cart to add more.</span>`;
     } else if (!cart[key] && products[key].stock > 0) {
-        html = `Product <b>${products[key].name}</b> added to your cart!`;
+        html = `<i class="far fa-check-circle fa-2x"></i> <span class="ml-3">Product <b>${products[key].name}</b> added to your cart!</span>`;
     } else {
-        html = `Product <b>${products[key].name}</b> out of stock!`;
+        html = `<i class="fas fa-ban fa-2x text-danger"></i> <span class="text-danger ml-3">Product <b>${products[key].name}</b> out of stock!</span>`;
     }
     div.innerHTML = html;
-    document.body.append(div);
+    document.body.appendChild(div);
     setTimeout(function () {
         div.parentElement.removeChild(div);
     }, 3000);
@@ -189,18 +281,18 @@ function confirm(event) {
 function renderHeader() {
     let div = document.createElement('div');
     div.id = 'header';
-    div.className = 'vh-100 d-flex flex-column';
+    div.className = 'vh-100 d-flex flex-column overflow-hidden';
     let html = `
         <div class="container-fluid p-0">
         	<div class="row no-gutters py-3 px-4 px-lg-5 bg-white border-bottom">
         	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
-        	        <h1 id="logo" class="text-dark text-center font-weight-light">The Fashion Store</h1>
+        	        <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</span></h1>
         	    </div>
         	    <div class="col-12 col-md col-xl px-xl-5 py-3 d-flex align-items-center justify-content-center">
                     <div class="input-group">
-                        <input type="text" id="searchInput" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        <input type="text" id="searchInput" class="form-control border-secondary" aria-label="Recipient's username" aria-describedby="button-addon2">
                         <div class="input-group-append">
-                        <button class="btn btn-outline-dark" type="button" id="searchBtn">Search</button>
+                        <button class="btn btn-outline-dark" type="button" id="searchBtn"><i class="fas fa-search"></i> <span>Search</span></button>
                         </div>
         	        </div>
         	    </div>
@@ -211,10 +303,11 @@ function renderHeader() {
                     <button id="adminBtn" class="btn btn-outline-dark ml-2"><i class="fas fa-lock"></i> Admin</button>
         	    </div>
             </div>
-            <div id="upBtn" class="d-none">
-                <button class="btn btn-light text-dark border"><i class="fas fa-chevron-up fa-3x"></i></button>
+            <div id="upBtn" class="d-none bg-white rounded shadow">
+                <button class="btn btn-outline-dark border-0"><i class="fas fa-chevron-up fa-3x"></i></button>
             </div>    
         </div>
+        <div id="showProductsBtn" class="pointer text-secondary d-flex align-items-center justify-content-center"><i class="fas fa-ellipsis-h"></i></div>
         `;
     div.innerHTML = html;
 
@@ -223,6 +316,7 @@ function renderHeader() {
     div.querySelector('#cartBtn').addEventListener('click', userInteraction);
     div.querySelector('#adminBtn').addEventListener('click', userInteraction);
     div.querySelector('#upBtn').addEventListener('click', userInteraction);
+    div.querySelector('#showProductsBtn').addEventListener('click', userInteraction);
 
     document.body.appendChild(div);
 }
@@ -230,22 +324,34 @@ function renderHeader() {
 function renderNav() {
     let div = document.createElement('div');
     div.id = 'nav';
-    div.className = 'p-3 bg-white border-bottom';
+    div.className = 'bg-white';
     let html = `
-    <ul class="nav nav-justified">
-    <li class="nav-item">
-        <button id="allBtn" class="btn btn-outline-dark border-0 text-nowrap">All products</button>
-    </li>
-    <li class="nav-item">
-        <button id="clothingBtn" class="btn btn-outline-dark border-0">Clothing</button>
-    </li>
-    <li class="nav-item">
-        <button id="footwearBtn" class="btn btn-outline-dark border-0">Footwear</button>
-    </li>
-    <li class="nav-item">
-        <button id="accessoriesBtn" class="btn btn-outline-dark border-0">Accessories</button>
-    </li>
-    </ul>
+    <div class="sticky-top bg-white border-bottom pt-3">
+        <ul class="nav">
+            <li class="nav-item col-12 col-md-3 text-center">
+                <button id="allBtn" class="btn btn-dark nav-btn border-0 text-nowrap">All products</button>
+                <hr class="d-md-none">
+            </li>    
+            <li class="nav-item col-4 col-md-3 text-center">
+                <button id="clothingBtn" class="btn btn-outline-dark nav-btn border-0">Clothing</button>
+            </li>
+            <li class="nav-item col-4 col-md-3 text-center">
+                <button id="footwearBtn" class="btn btn-outline-dark nav-btn border-0">Footwear</button>
+            </li>
+            <li class="nav-item col-4 col-md-3 text-center">
+                <button id="accessoriesBtn" class="btn btn-outline-dark nav-btn border-0">Accessories</button>
+            </li>
+        </ul>
+        <div id="sortBar">
+            <hr class="mb-0">    
+            <div class="px-3">
+                <div class="d-flex justify-content-end align-items-center">
+                <div id="sortNameBtn" class="pointer text-secondary">Sort by name <i class="fas fa-chevron-circle-up"></i></div>
+                <div id="sortPriceBtn" class="ml-3 pointer text-secondary">Sort by price <i class="fas fa-chevron-circle-up"></i></div>
+                </div> 
+            </div>   
+        </div>
+    </div>
     `;
     div.innerHTML = html;
 
@@ -253,13 +359,17 @@ function renderNav() {
     div.querySelector('#clothingBtn').addEventListener('click', userInteraction);
     div.querySelector('#footwearBtn').addEventListener('click', userInteraction);
     div.querySelector('#accessoriesBtn').addEventListener('click', userInteraction);
+    div.querySelector('#sortNameBtn').addEventListener('click', userInteraction);
+    div.querySelector('#sortPriceBtn').addEventListener('click', userInteraction);
 
-    document.querySelector('#header').appendChild(div);
+
+    document.body.appendChild(div);
 }
 
 function renderProducts(productsObj) {
-    if (document.querySelector('#products')) {
-        document.body.removeChild(document.querySelector('#products'));
+    let products = document.querySelector('#products');
+    if (products) {
+        products.parentElement.removeChild(products);
     }
     let div = document.createElement('div')
     div.id = 'products';
@@ -267,17 +377,15 @@ function renderProducts(productsObj) {
     let html = '<div class="row">';
     for (let key in productsObj) {
         html += `
-            <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mt-4">
+            <div class="col-sm-12 col-md-6 col-lg-3 col-xl-2 mt-5">
             <div class="card text-center h-100">
-                <div class="h-100 d-flex align-items-center justify-content-center p-2 overflow-hidden">
-                    <img class="w-100" src="./assets/pics/${key}/${productsObj[key].pics.split(' ')[0]}">
-                </div>
-                <div class="card-body">
+                <img class="card-img-top pointer" data-key="${key}" src="./assets/pics/${key}/${productsObj[key].pics.split(/\s+/)[0]}">
+                <div class="card-body d-flex flex-column">
                 <h4 class="card-title">${productsObj[key].name}</h4>
-                <p>Price: ${productsObj[key].price} euro</p>
+                <p class="mt-auto mb-0">Price: ${productsObj[key].price} euro</p>
                 </div>
                 <div class="card-footer d-flex">
-                    <button class="detailsBtn btn btn-dark flex-fill" data-key="${key}">Details</button>
+                    <button class="detailsBtn btn btn-dark flex-grow-1" data-key="${key}">Details</button>
                     <button class="addBtn btn btn-success ml-2" data-key="${key}"><i class="fas fa-shopping-cart"></i></button>
                 </div>
                 </div>
@@ -298,21 +406,27 @@ function renderProducts(productsObj) {
     for (let element of buttons) {
         element.addEventListener('click', userInteraction);
     }
+    let previews = div.querySelectorAll('.card-img-top');
+    for (let element of previews) {
+        element.addEventListener('mouseover', userInteraction);
+        element.addEventListener('mouseout', userInteraction);
+        element.addEventListener('click', userInteraction);
+    }
 
-    document.body.appendChild(div);
+    document.querySelector('#nav').appendChild(div);
 }
 
 function findProducts(string) {
     let foundProducts = {};
-    string.split(' ').forEach(function (item) {
+    string.split(/\s+/).forEach(function (item) {
         for (let key in products) {
             if (products[key].cat === item) {
                 foundProducts[key] = products[key]
             }
-            if (products[key].tags.split(' ').includes(item)) {
+            if (products[key].tags.split(/\s+/).includes(item)) {
                 foundProducts[key] = products[key]
             }
-            if (products[key].name.toLowerCase().split(' ').includes(item)) {
+            if (products[key].name.toLowerCase().split(/\s+/).includes(item)) {
                 foundProducts[key] = products[key]
             }
         }
@@ -321,7 +435,7 @@ function findProducts(string) {
 }
 
 function scroll() {
-    let height = document.querySelector('#header').getBoundingClientRect().height - document.querySelector('#nav').getBoundingClientRect().height;
+    let height = document.querySelector('#header').getBoundingClientRect().height;
     window.scrollTo({
         top: height,
         behavior: 'smooth'
@@ -409,6 +523,14 @@ function renderCarousel() {
     div.querySelector('#discounts-3').addEventListener('click', userInteraction);
     div.querySelector('#discounts-4').addEventListener('click', userInteraction);
 
-    document.querySelector('#header').appendChild(div);
+    document.querySelector('#header').insertBefore(div, document.querySelector('#showProductsBtn'));
     $('.carousel').carousel();
+}
+
+function sortProducts(arr, sortParameter, sortDirection) {
+    return arr.sort(function (first, second) {
+        if (first[1][sortParameter] > second[1][sortParameter]) return sortDirection;
+        else if (first[1][sortParameter] < second[1][sortParameter]) return -sortDirection;
+        else return 0;
+    });
 }

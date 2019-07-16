@@ -32,14 +32,14 @@ function renderProducts() {
     div.id = "container";
     div.className = 'col-12 col-lg-9 mx-auto p-0';
     let html = `
-    <div class="mb-3 text-center">
-    <button id="addBtn" class="btn btn-secondary text-nowarp"><i class="fas fa-plus"></i> Add new product</button>
-    <button id="storeBtn" class="btn btn-secondary">Go to Store</button>
+    <div class="mb-3 d-flex justify-content-center">
+    <button id="addBtn" class="btn btn-secondary text-nowrap"><i class="fas fa-plus"></i> Add new product</button>
+    <button id="storeBtn" class="btn btn-secondary ml-3">Go to Store</button>
     </div>
-    <table class="table table-striped text-center">
+    <table class="table table-hover text-center">
         <thead>
             <tr>
-            <th>Image</th>
+            <th class="d-none d-md-table-cell"></th>
             <th>Name</th>
             <th>Price</th>
             <th>Stock</th>
@@ -51,9 +51,9 @@ function renderProducts() {
     for (let key in products) {
         html += `
             <tr>
-                <td class="align-middle">
+                <td class="d-none d-md-table-cell align-middle ">
                     <div class="picSmall mx-auto overflow-hidden bg-white rounded">
-                        <img class="w-100" src="../assets/pics/${key}/${products[key].pics.split(' ')[0]}">
+                        <img class="w-100" src="../assets/pics/${key}/${products[key].pics.split(/\s+/)[0]}">
                     </div>
                 </td>
                 <td class="align-middle"><b>${products[key].name}</b></td>
@@ -62,7 +62,7 @@ function renderProducts() {
                 <td class="align-middle">
                     <div class="d-flex justify-content-center">
                         <button class="editBtn btn btn-secondary col-6" data-key="${key}">Edit</button>
-                        <button class="removeBtn btn btn-danger col-6 ml-2 text-nowarp" data-key="${key}">Remove <i class="fas fa-trash-alt"></i></button>
+                        <button class="removeBtn btn btn-danger col-6 ml-2 text-nowrap" data-key="${key}"><span class="d-none d-md-inline">Remove</span> <i class="fas fa-trash-alt"></i></button>
                     </div>
                 </td>
             </tr>    
@@ -85,7 +85,7 @@ function renderProducts() {
         element.addEventListener('click', removeProduct);
     });
 
-    document.body.append(div);
+    document.body.appendChild(div);
 }
 
 function showLoading() {
@@ -161,12 +161,12 @@ function cancel() {
 
 function saveProduct(key) {
     let newProduct = {
-        name: document.querySelector('#name').value,
-        pics: document.querySelector('#pics').value,
-        price: Number(document.querySelector('#price').value),
-        stock: Number(document.querySelector('#stock').value),
-        desc: document.querySelector('#desc').value,
-        tags: document.querySelector('#tags').value,
+        name: document.querySelector('#name').value.trim(),
+        pics: document.querySelector('#pics').value.trim(),
+        price: Number(document.querySelector('#price').value.trim()),
+        stock: Number(document.querySelector('#stock').value.trim()),
+        desc: document.querySelector('#desc').value.trim(),
+        tags: document.querySelector('#tags').value.trim(),
         cat: document.querySelector('#cat').value
     };
     showLoading();
@@ -227,5 +227,5 @@ function removeProduct() {
     div.querySelector('#noBtn').addEventListener('click', function () {
         div.parentElement.removeChild(div);
     });
-    document.body.append(div);
+    document.body.appendChild(div);
 }

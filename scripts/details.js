@@ -20,6 +20,7 @@ getProductDetails()
             syncCart();
             renderDetails();
             renderImgCarousel();
+            renderThumbnails();
             showCartInfo();
         } else {
             alert();
@@ -30,6 +31,18 @@ getProductDetails()
     });
 
 function userInteraction(event) {
+    if (this.classList.contains('thumbnail')) {
+        let div = document.createElement('div');
+        div.className = 'my-fullscreen d-flex align-items-center justify-content-center';
+        let html = `
+        <div class="my-h-95 border rounded"><img class="pointer d-block h-100" src="${this.src}"></div>
+        `;
+        div.innerHTML = html;
+        div.querySelector('div').addEventListener('click', function () {
+            div.parentElement.removeChild(div);
+        });
+        document.body.appendChild(div);
+    }
     if (this.id === 'storeBtn' || this.id === 'logo') {
         location.assign('../index.html');
     }
@@ -49,6 +62,8 @@ function userInteraction(event) {
         addToCart();
         showCartInfo();
         renderDetails();
+        renderImgCarousel();
+        renderThumbnails();
         confirm();
     }
     if (this.id === 'increaseBtn') {
@@ -70,14 +85,15 @@ function userInteraction(event) {
 
 function alert() {
     let div = document.createElement('div');
-    div.className = 'alert alert-danger mt-5 text-center d-table p-4 mx-auto';
+    div.className = 'my-fullscreen';
     div.innerHTML = `
+    <div class="my-fixed-centered border shadow p-5 text-center rounded">
     <p>Product not available!</p>
-    <button id="storeBtn" class="btn btn-dark mx-3">Continue shopping</button>
-    </button>
+    <button id="storeBtn" class="btn btn-success mx-3">Continue shopping</button>
+    </div>
     `;
     div.querySelector('#storeBtn').addEventListener('click', userInteraction);
-    document.body.append(div);
+    document.body.appendChild(div);
 }
 
 function showLoading() {
@@ -97,10 +113,15 @@ function clearLoading() {
 }
 
 function confirm() {
+    let confirm = document.querySelector('#confirm');
+    if (confirm) {
+        confirm.parentElement.removeChild(confirm);
+    }
     let div = document.createElement('div');
-    div.className = 'alert alert-success text-center m-0 my-fixed-centered p-4';
-    div.innerHTML = `Product <b>${product.name}</b> added to your cart!`;
-    document.body.append(div);
+    div.id = 'confirm';
+    div.className = 'my-fixed-centered bg-white text-success border shadow rounded d-flex align-items-center text-center p-4';
+    div.innerHTML = `<i class="far fa-check-circle fa-2x"></i> <span class="ml-3">Product <b>${product.name}</b> added to your cart!</span>`;
+    document.body.appendChild(div);
     setTimeout(function () {
         div.parentElement.removeChild(div);
     }, 3000);
@@ -161,8 +182,9 @@ function renderDetails() {
     div.className = 'container p-0 pt-4 pt-lg-5 position-relative';
     let html = `
     <div class="row no-gutters justify-content-center align-items-stretch">
-        <div class="col-12 col-md-6 col-xl-5 d-flex flex-column justify-content-center align-items-center">
-            <div id="imgCarousel" class="height-fixed align-self-stretch d-flex justify-content-center align-items-center mx-4 overflow-hidden border rounded">
+        <div class="col-12 col-md-6 col-xl-5 d-flex">
+            <div id="thumbnails" class="d-none d-lg-block"></div>    
+            <div id="imgCarousel" class="height-fixed flex-grow-1 d-flex justify-content-center align-items-center mx-4 overflow-hidden border rounded">
             </div>
         </div>
         <div class="col-12 col-md-6 col-xl-5 d-flex justify-content-center align-items-center">
@@ -172,14 +194,14 @@ function renderDetails() {
                 <p><b>Price: ${product.price} euro</b></p>
                 <p>Stock: ${product.stock} pcs | Cart:  ${(cart[key])?cart[key].qty:0} pcs</p>
         `;
-    if (cart[key] && product.stock === cart[key].qty)
+    if ((cart[key] && product.stock === cart[key].qty) || product.stock <= 0)
         html += `
                 <div>
                     <div class="input-group mb-3">
                         <div class="input-group-prepend">
                             <button id="decreaseBtn" class="btn btn-dark font-weight-bold" disabled>-</button>
                         </div>
-                        <input id="qtyInput" class="form-control text-center" type="text" value="All stock in cart" disabled>
+                        <input id="qtyInput" class="form-control text-center font-weight-bold ${(product.stock <= 0)?'text-danger':''}" type="text" value="${(product.stock <= 0)?'Out of stock':'All stock in cart'}" disabled>
                         <div class="input-group-append">
                             <button id="increaseBtn" class="btn btn-dark font-weight-bold" disabled>+</button>
                         </div>
@@ -209,26 +231,8 @@ function renderDetails() {
             </div>
         </div>
     </div>
-        `;
-    else if (product.stock <= 0)
-        html += `
-            <div>
-                <div class="input-group mb-3">
-                    <div class="input-group-prepend">
-                        <button id="decreaseBtn" class="btn btn-dark font-weight-bold" disabled>-</button>
-                    </div>
-                    <input id="qtyInput" class="form-control text-center" type="text" value="Out of stock" disabled>
-                    <div class="input-group-append">
-                        <button id="increaseBtn" class="btn btn-dark font-weight-bold" disabled>+</button>
-                    </div>
-                </div>
-            </div>  
-            <button id="addBtn" class="btn btn-dark mb-1" disabled>Add to cart <i class="fas fa-shopping-cart"></i></button>
-            <button id="storeBtn" class="btn btn-success mb-3">Continue shopping</button>
-        </div>
-    </div>
-</div>
-        `;
+    `;
+
     div.innerHTML = html;
 
     div.querySelector('#addBtn').addEventListener('click', userInteraction);
@@ -247,13 +251,13 @@ function renderHeader() {
         <div class="container-fluid p-0">
         	<div class="row no-gutters py-3 px-4 px-lg-5 bg-white border-bottom">
         	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
-        	        <h1 id="logo" class="text-dark text-center font-weight-light">The Fashion Store</h1>
+        	        <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</h1>
         	    </div>
         	    <div class="col-12 col-md col-xl px-xl-5 py-3 d-flex align-items-center justify-content-center">
                     <div class="input-group">
-                        <input type="text" id="searchInput" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        <input type="text" id="searchInput" class="form-control border-secondary" aria-label="Recipient's username" aria-describedby="button-addon2">
                         <div class="input-group-append">
-                        <button class="btn btn-outline-dark" type="button" id="searchBtn">Search</button>
+                        <button class="btn btn-outline-dark" type="button" id="searchBtn"><i class="fas fa-search"></i> <span>Search</span></button>
                         </div>
         	        </div>
         	    </div>
@@ -277,25 +281,25 @@ function renderHeader() {
 }
 
 function renderImgCarousel() {
-    let counter1 = 0;
-    let counter2 = 0;
+    let counter = 0;
+    let firstTime = true;
     let html = `
     <div id="carousel" class="carousel slide h-100 w-100" data-ride="carousel" data-interval="2000">
     <ol class="carousel-indicators">
-        ${product.pics.split(' ').map(() => {
+        ${product.pics.split(/\s+/).map(() => {
             let html = `
-            <li data-target="#carousel" data-slide-to="${counter1}" class="${(counter1===0)?'active':''}"></li>
+            <li data-target="#carousel" data-slide-to="${counter}" class="${(counter===0)?'active':''}"></li>
             `;
-            counter1++;
+            counter++;
             return html;
         }).join('')}
     </ol>
         <div class="carousel-inner h-100">
-        ${product.pics.split(' ').map(pic => {
+        ${product.pics.split(/\s+/).map(pic => {
             let html = `
-            <div class="carousel-item ${(counter2===0)?'active':''} h-100" style="background: url('../assets/pics/${key}/${pic}') center no-repeat; background-size: contain;">
+            <div class="carousel-item ${(firstTime)?'active':''} h-100" style="background: url('../assets/pics/${key}/${pic}') center no-repeat; background-size: cover;">
             </div>`;
-            counter2++;
+            firstTime = false;
             return html;
         }).join('')}
         </div>
@@ -311,4 +315,19 @@ function renderImgCarousel() {
     `;
     document.querySelector('#imgCarousel').innerHTML = html;
     $('.carousel').carousel();
+}
+
+function renderThumbnails() {
+    let div = document.createElement('div');
+    div.className = 'd-flex flex-column';
+    let html = `
+    ${product.pics.split(/\s+/).map(function(pic){
+        return `<div class="border rounded mb-4"><img data-pic="${pic}" class="thumbnail d-block" src="../assets/pics/${key}/${pic}"></div>`;
+    }).join('')}
+    `;
+    div.innerHTML = html;
+    div.querySelectorAll('.thumbnail').forEach(function (element) {
+        element.addEventListener('click', userInteraction);
+    });
+    document.querySelector('#thumbnails').appendChild(div);
 }

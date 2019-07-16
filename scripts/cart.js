@@ -218,10 +218,10 @@ function renderCart() {
         document.body.appendChild(div);
     } else {
         let div = document.createElement('div');
-        div.className = "d-flex align-items-center justify-content-center my-fullscreen";
+        div.className = "my-fullscreen";
         div.innerHTML = `
-        <div class="alert alert-light text-center border shadow p-5">
-        <h4>Shopping cart is empty!</h4>
+        <div class="my-fixed-centered text-center border shadow rounded p-5">
+        <p>Shopping cart is empty!</p>
         <button id="storeBtn" class="btn btn-success mt-3">Continue shopping</button>
         </div>
         `;
@@ -305,8 +305,8 @@ function placeOrder() {
                         <div class="alert alert-light p-5 border text-center shadow">
                             <h4 class="mb-3">Thank you!</h4>
                             <hr>
-                            <h6 class="text-success">Your order was successfully placed.</h6>
-                            <button id="storeBtn" class="btn btn-dark mt-3">Continue shopping</button>
+                            <div class="text-success d-flex align-items-center"><i class="far fa-check-circle fa-2x"></i> <span class="ml-3">Your order was successfully placed.</span></div>
+                            <button id="storeBtn" class="btn btn-success mt-3">Continue shopping</button>
                         </div>
                         `;
                         div.innerHTML = html;
@@ -320,12 +320,6 @@ function placeOrder() {
             } else {
                 clearLoading();
                 showCartInfo();
-                renderCart();
-                if (Object.keys(cart).length > 0) {
-                    addListeners('cartProducts');
-                } else {
-                    addListeners('alert');
-                }
             }
         })
         .catch(function (err) {
@@ -341,13 +335,13 @@ function renderHeader() {
         <div class="container-fluid p-0">
         	<div class="row no-gutters py-3 px-4 px-lg-5 bg-white border-bottom">
         	    <div class="col-12 col-lg-auto col-xl-auto pr-lg-5 d-flex align-items-center justify-content-center justify-content-lg-start">
-        	        <h1 id="logo" class="text-dark text-center font-weight-light">The Fashion Store</h1>
+        	        <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</h1>
         	    </div>
         	    <div class="col-12 col-md col-xl px-xl-5 py-3 d-flex align-items-center justify-content-center">
                     <div class="input-group">
-                        <input type="text" id="searchInput" class="form-control" aria-label="Recipient's username" aria-describedby="button-addon2">
+                        <input type="text" id="searchInput" class="form-control border-secondary" aria-label="Recipient's username" aria-describedby="button-addon2">
                         <div class="input-group-append">
-                        <button class="btn btn-outline-dark" type="button" id="searchBtn">Search</button>
+                        <button class="btn btn-outline-dark" type="button" id="searchBtn"><i class="fas fa-search"></i> <span>Search</span></button>
                         </div>
         	        </div>
         	    </div>

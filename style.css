@@ -7,7 +7,7 @@
 }
 
 #footer {
-    height: 150px;
+    height: 200px;
 }
 
 #logo {
@@ -18,8 +18,18 @@
     height: 100px;
 }
 
+#showProductsBtn {
+    font-size: 150%;
+    height: 50px;
+}
+
+.thumbnail {
+    width: 65px;
+    cursor: pointer;
+}
+
 .height-fixed {
-    height: 400px;
+    height: 500px;
 }
 
 .my-fixed-centered {
@@ -30,6 +40,14 @@
     z-index: 1000;
 }
 
+.my-h-95 {
+    height: 95%;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
 .bg-white-50 {
     background: rgba(255, 255, 255, 0.5);
 }
@@ -38,6 +56,19 @@
     position: absolute;
     top: 0;
     z-index: 10000;
+}
+
+.my-absolute-right {
+    position: absolute;
+    right: 10px;
+    z-index: 10000;
+    top: 50%;
+    transform: translatey(-50%);
+
+}
+
+.h70px {
+    height: 70px;
 }
 
 .my-fullscreen {
@@ -55,15 +86,13 @@
     height: 50px;
 }
 
+.rotated {
+    transform: rotate(180deg);
+}
+
 input[type="text"],
 textarea,
 button {
     outline: none;
     box-shadow: none !important;
-}
-
-.carousel-control-next,
-.carousel-control-prev,
-.carousel-indicators {
-    filter: invert(100%);
 }
