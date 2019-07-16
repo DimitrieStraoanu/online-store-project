@@ -332,30 +332,28 @@ function renderHeader() {
     div.id = 'header';
     div.className = 'vh-100 d-flex flex-column overflow-hidden';
     let html = `
-        <div class="container-fluid p-0">
-        	<div class="row no-gutters py-3 px-4 px-xl-5 py-xl-4 bg-white border-bottom">
-        	    <div class="col-12 col-sm col-xl-auto order-xl-1 pb-2 pb-sm-0 d-flex align-items-center justify-content-center justify-content-sm-start">
-        	        <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</span></h1>
-        	    </div>
-                <div class="col-12 col-sm-auto col-xl-auto order-xl-3 d-flex align-items-center justify-content-center justify-content-sm-end">
-                    <button id="adminBtn" class="btn btn-outline-dark flex-grow-1 flex-sm-grow-0"><i class="fas fa-lock"></i> <span class="d-sm-none d-md-inline">Admin</span></button>
-                    <button id="cartBtn" class="btn btn-outline-dark flex-grow-1 flex-sm-grow-0 position-relative ml-2">
-                    <i class="fas fa-shopping-cart"></i> <span class="d-sm-none d-md-inline">Shopping cart</span> <span id="cartItems" class="rounded-pill px-2 border border-dark badge-danger font-weight-bold my-badge"></span>
-                    </button>
-                </div>
-        	    <div class="col-12 col-xl pt-2 pt-xl-0 px-xl-5 order-xl-2 d-flex align-items-center justify-content-center">
-                    <div class="input-group">
-                        <input type="text" id="searchInput" class="form-control border-secondary" aria-label="Recipient's username" aria-describedby="button-addon2">
-                        <div class="input-group-append">
-                        <button class="btn btn-outline-dark" type="button" id="searchBtn"><i class="fas fa-search"></i> <span class="d-none d-sm-inline">Search</span></button>
-                        </div>
-        	        </div>
-        	    </div>
+        <div class="row no-gutters py-3 px-4 px-xl-5 py-xl-4 bg-white border-bottom">
+            <div class="col-12 col-sm col-xl-auto order-xl-1 pb-2 pb-sm-0 d-flex align-items-center justify-content-center justify-content-sm-start">
+                <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</span></h1>
             </div>
-            <div id="upBtn" class="d-none bg-white rounded shadow">
-                <button class="btn btn-outline-dark border-0"><i class="fas fa-chevron-up fa-3x"></i></button>
-            </div>    
+            <div class="col-12 col-sm-auto col-xl-auto order-xl-3 d-flex align-items-center justify-content-center justify-content-sm-end">
+                <button id="adminBtn" class="btn btn-outline-dark flex-grow-1 flex-sm-grow-0"><i class="fas fa-lock"></i> <span class="d-sm-none d-md-inline">Admin</span></button>
+                <button id="cartBtn" class="btn btn-outline-dark flex-grow-1 flex-sm-grow-0 position-relative ml-2">
+                <i class="fas fa-shopping-cart"></i> <span class="d-sm-none d-md-inline">Shopping cart</span> <span id="cartItems" class="rounded-pill px-2 border border-dark badge-danger font-weight-bold my-badge"></span>
+                </button>
+            </div>
+            <div class="col-12 col-xl pt-2 pt-xl-0 px-xl-5 order-xl-2 d-flex align-items-center justify-content-center">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control border-secondary" aria-label="Recipient's username" aria-describedby="button-addon2">
+                    <div class="input-group-append">
+                    <button class="btn btn-outline-dark" type="button" id="searchBtn"><i class="fas fa-search"></i> <span class="d-none d-sm-inline">Search</span></button>
+                    </div>
+                </div>
+            </div>
         </div>
+        <div id="upBtn" class="d-none bg-white rounded shadow">
+            <button class="btn btn-outline-dark border-0"><i class="fas fa-chevron-up fa-3x"></i></button>
+        </div>    
         <div id="showProductsBtn" class="pointer text-dark d-flex align-items-center justify-content-center"><i class="fas fa-grip-lines"></i></div>
         `;
     div.innerHTML = html;
@@ -505,61 +503,61 @@ function renderCarousel() {
     let div = document.createElement('div');
     div.className = 'flex-grow-1';
     let html = `
-    <div id="discounts" class="carousel slide h-100" data-ride="carousel" data-interval="3000">
-    <ol class="carousel-indicators">
-        <li data-target="#discounts" data-slide-to="0" class="active"></li>
-        <li data-target="#discounts" data-slide-to="1"></li>
-        <li data-target="#discounts" data-slide-to="2"></li>
-        <li data-target="#discounts" data-slide-to="3"></li>
-    </ol>
-    <div class="carousel-inner h-100">
-        <div class="carousel-item h-100 active" style="background-image:url('./assets/pics/discounts/img1.jpg'); background-size: cover; background-position: center;">
-            <div class="h-100 d-flex align-items-center justify-content-center">
-                <div class="bg-white-50 p-3 p-md-5 text-center">
-                    <h1 class="display-4">30% discount!</h1>
-                    <h1 class="font-weight-light">for all accessories</h1>
-                    <button id="discounts-1" class="btn btn-outline-dark mt-4">Click to shop</button>
+        <div id="discounts" class="carousel slide h-100" data-ride="carousel" data-interval="3000">
+            <ol class="carousel-indicators">
+                <li data-target="#discounts" data-slide-to="0" class="active"></li>
+                <li data-target="#discounts" data-slide-to="1"></li>
+                <li data-target="#discounts" data-slide-to="2"></li>
+                <li data-target="#discounts" data-slide-to="3"></li>
+            </ol>
+            <div class="carousel-inner h-100">
+                <div class="carousel-item h-100 active" style="background-image:url('./assets/pics/discounts/img1.jpg'); background-size: cover; background-position: center;">
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <div class="bg-white-50 p-3 p-md-5 text-center">
+                            <h1 class="display-4">30% discount!</h1>
+                            <h1 class="font-weight-light">for all accessories</h1>
+                            <button id="discounts-1" class="btn btn-outline-dark mt-4">Click to shop</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img2.jpg'); background-size: cover; background-position: center;">
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <div class="bg-white-50 p-3 p-md-5 text-center">
+                            <h1 class="display-4">25% discount!</h1>
+                            <h1 class="font-weight-light">for all office shoes</h1>
+                            <button id="discounts-2" class="btn btn-outline-dark mt-4">Click to shop</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img3.jpg'); background-size: cover; background-position: center;">
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <div class="bg-white-50 p-3 p-md-5 text-center">
+                            <h1 class="display-4">30% discount!</h1>
+                            <h1 class="font-weight-light">for last year collection</h1>
+                            <button id="discounts-3" class="btn btn-outline-dark mt-4">Click to shop</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img4.jpg'); background-size: cover; background-position: center;">
+                    <div class="h-100 d-flex align-items-center justify-content-center">
+                        <div class="bg-white-50 p-3 p-md-5 text-center">
+                            <h1 class="display-4">50% discount!</h1>
+                            <h1 class="font-weight-light">for all sport shoes</h1>
+                            <button id="discounts-4" class="btn btn-outline-dark mt-4">Click to shop</button>
+                        </div>
+                    </div>
                 </div>
             </div>
+            <a class="carousel-control-prev" href="#discounts" role="button" data-slide="prev">
+                <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                <span class="sr-only">Previous</span>
+            </a>
+            <a class="carousel-control-next" href="#discounts" role="button" data-slide="next">
+                <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                <span class="sr-only">Next</span>
+            </a>
         </div>
-        <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img2.jpg'); background-size: cover; background-position: center;">
-            <div class="h-100 d-flex align-items-center justify-content-center">
-                <div class="bg-white-50 p-3 p-md-5 text-center">
-                    <h1 class="display-4">25% discount!</h1>
-                    <h1 class="font-weight-light">for all office shoes</h1>
-                    <button id="discounts-2" class="btn btn-outline-dark mt-4">Click to shop</button>
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img3.jpg'); background-size: cover; background-position: center;">
-            <div class="h-100 d-flex align-items-center justify-content-center">
-                <div class="bg-white-50 p-3 p-md-5 text-center">
-                    <h1 class="display-4">30% discount!</h1>
-                    <h1 class="font-weight-light">for last year collection</h1>
-                    <button id="discounts-3" class="btn btn-outline-dark mt-4">Click to shop</button>
-                </div>
-            </div>
-        </div>
-        <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img4.jpg'); background-size: cover; background-position: center;">
-            <div class="h-100 d-flex align-items-center justify-content-center">
-                <div class="bg-white-50 p-3 p-md-5 text-center">
-                    <h1 class="display-4">50% discount!</h1>
-                    <h1 class="font-weight-light">for all sport shoes</h1>
-                    <button id="discounts-4" class="btn btn-outline-dark mt-4">Click to shop</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <a class="carousel-control-prev" href="#discounts" role="button" data-slide="prev">
-        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-        <span class="sr-only">Previous</span>
-    </a>
-    <a class="carousel-control-next" href="#discounts" role="button" data-slide="next">
-        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-        <span class="sr-only">Next</span>
-    </a>
-    </div>
-    `;
+        `;
     div.innerHTML = html;
     div.querySelector('#discounts-1').addEventListener('click', userInteraction);
     div.querySelector('#discounts-2').addEventListener('click', userInteraction);

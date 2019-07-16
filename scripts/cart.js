@@ -206,13 +206,13 @@ function renderCart() {
         div.querySelector('#storeBtn').addEventListener('click', userInteraction);
         div.querySelector('#orderBtn').addEventListener('click', userInteraction);
         div.querySelectorAll('.increaseBtn').forEach(element => {
-           element.addEventListener('click', userInteraction); 
+            element.addEventListener('click', userInteraction);
         });
         div.querySelectorAll('.decreaseBtn').forEach(element => {
-           element.addEventListener('click', userInteraction); 
+            element.addEventListener('click', userInteraction);
         });
         div.querySelectorAll('.removeBtn').forEach(element => {
-           element.addEventListener('click', userInteraction); 
+            element.addEventListener('click', userInteraction);
         });
 
         document.body.appendChild(div);
@@ -220,9 +220,9 @@ function renderCart() {
         let div = document.createElement('div');
         div.className = "my-fullscreen";
         div.innerHTML = `
-        <div class="my-fixed-centered text-center border shadow rounded p-5">
+        <div class="my-fixed-centered bg-white text-center border shadow rounded p-5">
         <p>Shopping cart is empty!</p>
-        <button id="storeBtn" class="btn btn-success mt-3">Continue shopping</button>
+        <button id="storeBtn" class="btn btn-success mt-3 text-nowrap">Continue shopping</button>
         </div>
         `;
 
@@ -332,7 +332,6 @@ function renderHeader() {
     div.id = 'header';
     div.className = 'd-flex flex-column';
     let html = `
-    <div class="container-fluid p-0">
         <div class="row no-gutters py-3 px-4 px-xl-5 py-xl-4 bg-white border-bottom">
             <div class="col-12 col-sm col-xl-auto order-xl-1 pb-2 pb-sm-0 d-flex align-items-center justify-content-center justify-content-sm-start">
                 <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</span></h1>
@@ -352,7 +351,6 @@ function renderHeader() {
                 </div>
             </div>
         </div>
-    </div>
         `;
     div.innerHTML = html;
 

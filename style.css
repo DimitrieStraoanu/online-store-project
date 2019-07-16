@@ -55,13 +55,13 @@
 .my-absolute-top {
     position: absolute;
     top: 0;
-    z-index: 10000;
+    z-index: 1000;
 }
 
 .my-absolute-right {
     position: absolute;
     right: 10px;
-    z-index: 10000;
+    z-index: 1000;
     top: 50%;
     transform: translatey(-50%);
 
@@ -85,7 +85,7 @@
 
 
 .my-fullscreen {
-    z-index: 10000;
+    z-index: 1000;
     position: fixed;
     top: 0;
     left: 0;

@@ -248,7 +248,6 @@ function renderHeader() {
     div.id = 'header';
     div.className = 'd-flex flex-column';
     let html = `
-    <div class="container-fluid p-0">
         <div class="row no-gutters py-3 px-4 px-xl-5 py-xl-4 bg-white border-bottom">
             <div class="col-12 col-sm col-xl-auto order-xl-1 pb-2 pb-sm-0 d-flex align-items-center justify-content-center justify-content-sm-start">
                 <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</span></h1>
@@ -268,8 +267,7 @@ function renderHeader() {
                 </div>
             </div>
         </div>
-    </div>
-    `;
+        `;
     div.innerHTML = html;
 
     div.querySelector('#logo').addEventListener('click', userInteraction);
