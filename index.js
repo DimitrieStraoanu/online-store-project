@@ -7,10 +7,7 @@ let initialHeight;
 let selectedBtn;
 initCart();
 renderHeader();
-document.querySelector('#header').style.height = window.innerHeight + 'px';
-window.addEventListener('resize', function () {
-    document.querySelector('#header').style.height = window.innerHeight + 'px';
-});
+setHeaderHeight();
 initialHeight = document.querySelector('#showProductsBtn').getBoundingClientRect().height;
 showCartInfo();
 showLoading();
@@ -216,6 +213,13 @@ function userInteraction() {
     }
 }
 
+function setHeaderHeight() {
+    document.querySelector('#header').style.height = window.innerHeight + 'px';
+    window.addEventListener('resize', function () {
+        document.querySelector('#header').style.height = window.innerHeight + 'px';
+    });
+}
+
 function selectBtn(that) {
     that.classList.add('btn-dark');
     that.classList.remove('btn-outline-dark');
@@ -335,7 +339,7 @@ function renderHeader() {
     let div = document.createElement('div');
     div.id = 'header';
     div.className = 'd-flex flex-column overflow-hidden';
-    let html = `
+    let html = /*html*/ `
         <div class="row no-gutters py-3 px-4 px-xl-5 py-xl-4 bg-white border-bottom">
             <div class="col-12 col-sm col-xl-auto order-xl-1 pb-2 pb-sm-0 d-flex align-items-center justify-content-center justify-content-sm-start">
                 <h1 id="logo" class="text-dark text-center font-weight-light"><i class="fas fa-tshirt"></i> The<b>Fashion</b>Store</span></h1>
@@ -438,10 +442,32 @@ function renderProducts() {
         </div>    
         `;
     }
-    html += `
+    html += /*html*/ `
         </div>
-        <hr>
-        <div id="footer"></div>
+            <hr>
+            <div id="footer" class="d-flex mb-3">
+                <div class="d-flex flex-column flex-grow-1 align-items-start justify-content-center text-secondary ml-3">
+                    <span class="mb-2"><b>CUSTOMER SERVICE</b></span>
+                    <span class="mb-2"><i class="fas fa-phone-alt"></i> <b>0754 700 700</b></span>
+                    <span>Monday-Friday: 10:00 - 17:00</span>
+                </div>
+                <div class="d-flex flex-column flex-grow-1 align-items-end text-secondary mr-3">
+                    <div>
+                        <a href="./pages/find_store.html"><b>Find a store</b></a>
+                        <a class="ml-3" href="./pages/contact.html"><b>Contact form</b></a>
+                    </div>
+                    <div class="text-right mt-2">
+                        <span><b>NEWSLETTER</b></span><br>
+                        <small>Do you want to know more about current trends<br> and our latest offers? <b>Subscribe!</b></small><br>
+                        <div class="input-group mt-2">
+                            <input class="form-control border-secondary" type="text">
+                            <div class="input-group-append">
+                                <button class="btn btn-secondary"><i class="far fa-envelope"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         `;
     div.innerHTML = html
 
