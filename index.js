@@ -505,50 +505,42 @@ function clearLoading() {
 
 function renderCarousel() {
     let div = document.createElement('div');
-    div.className = 'flex-grow-1';
+    div.className = 'd-flex flex-grow-1';
     let html = `
-        <div id="discounts" class="carousel slide h-100" data-ride="carousel" data-interval="3000">
+        <div id="discounts" class="carousel slide d-flex flex-grow-1" data-ride="carousel" data-interval="3000">
             <ol class="carousel-indicators">
                 <li data-target="#discounts" data-slide-to="0" class="active"></li>
                 <li data-target="#discounts" data-slide-to="1"></li>
                 <li data-target="#discounts" data-slide-to="2"></li>
                 <li data-target="#discounts" data-slide-to="3"></li>
             </ol>
-            <div class="carousel-inner h-100">
-                <div class="carousel-item h-100 active" style="background-image:url('./assets/pics/discounts/img1.jpg'); background-size: cover; background-position: center;">
-                    <div class="h-100 d-flex align-items-center justify-content-center">
-                        <div class="bg-white-50 p-3 p-md-5 text-center">
-                            <h1 class="display-4">30% discount!</h1>
-                            <h1 class="font-weight-light">for all accessories</h1>
-                            <button id="discounts-1" class="btn btn-outline-dark mt-4">Click to shop</button>
-                        </div>
+            <div class="carousel-inner d-flex">
+                <div class="carousel-item position-relative active" style="background-image:url('./assets/pics/discounts/img1.jpg'); background-size: cover; background-position: center;">
+                    <div class="my-absolute-center bg-white-50 p-3 p-md-5 text-center">
+                        <h1 class="display-4">30% discount!</h1>
+                        <h1 class="font-weight-light">for all accessories</h1>
+                        <button id="discounts-1" class="btn btn-outline-dark mt-4">Click to shop</button>
                     </div>
                 </div>
-                <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img2.jpg'); background-size: cover; background-position: center;">
-                    <div class="h-100 d-flex align-items-center justify-content-center">
-                        <div class="bg-white-50 p-3 p-md-5 text-center">
-                            <h1 class="display-4">25% discount!</h1>
-                            <h1 class="font-weight-light">for all office shoes</h1>
-                            <button id="discounts-2" class="btn btn-outline-dark mt-4">Click to shop</button>
-                        </div>
+                <div class="carousel-item position-relative" style="background-image:url('./assets/pics/discounts/img2.jpg'); background-size: cover; background-position: center;">
+                    <div class="my-absolute-center bg-white-50 p-3 p-md-5 text-center">
+                        <h1 class="display-4">25% discount!</h1>
+                        <h1 class="font-weight-light">for all office shoes</h1>
+                        <button id="discounts-2" class="btn btn-outline-dark mt-4">Click to shop</button>
                     </div>
                 </div>
-                <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img3.jpg'); background-size: cover; background-position: center;">
-                    <div class="h-100 d-flex align-items-center justify-content-center">
-                        <div class="bg-white-50 p-3 p-md-5 text-center">
-                            <h1 class="display-4">30% discount!</h1>
-                            <h1 class="font-weight-light">for last year collection</h1>
-                            <button id="discounts-3" class="btn btn-outline-dark mt-4">Click to shop</button>
-                        </div>
+                <div class="carousel-item position-relative" style="background-image:url('./assets/pics/discounts/img3.jpg'); background-size: cover; background-position: center;">
+                    <div class="my-absolute-center bg-white-50 p-3 p-md-5 text-center">
+                        <h1 class="display-4">30% discount!</h1>
+                        <h1 class="font-weight-light">for last year collection</h1>
+                        <button id="discounts-3" class="btn btn-outline-dark mt-4">Click to shop</button>
                     </div>
                 </div>
-                <div class="carousel-item h-100" style="background-image:url('./assets/pics/discounts/img4.jpg'); background-size: cover; background-position: center;">
-                    <div class="h-100 d-flex align-items-center justify-content-center">
-                        <div class="bg-white-50 p-3 p-md-5 text-center">
-                            <h1 class="display-4">50% discount!</h1>
-                            <h1 class="font-weight-light">for all sport shoes</h1>
-                            <button id="discounts-4" class="btn btn-outline-dark mt-4">Click to shop</button>
-                        </div>
+                <div class="carousel-item position-relative" style="background-image:url('./assets/pics/discounts/img4.jpg'); background-size: cover; background-position: center;">
+                    <div class="my-absolute-center bg-white-50 p-3 p-md-5 text-center">
+                        <h1 class="display-4">50% discount!</h1>
+                        <h1 class="font-weight-light">for all sport shoes</h1>
+                        <button id="discounts-4" class="btn btn-outline-dark mt-4">Click to shop</button>
                     </div>
                 </div>
             </div>

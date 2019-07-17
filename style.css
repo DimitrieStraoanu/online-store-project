@@ -64,7 +64,14 @@
     z-index: 1000;
     top: 50%;
     transform: translatey(-50%);
+}
 
+.my-absolute-center {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    z-index: 1000;
+    transform: translate(-50%, -50%);
 }
 
 .h70px {
