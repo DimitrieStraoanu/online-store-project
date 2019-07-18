@@ -389,19 +389,19 @@ function renderNav() {
     div.className = 'bg-white';
     let html = /*html*/`
     <div class="sticky-top bg-white shadow-sm">
-        <div id="menuBtn" class="text-right d-md-none p-2 border-bottom pointer"><i class="fas fa-bars fa-2x" aria-hidden="true"></i></div>
+        <div id="menuBtn" class="text-center d-md-none p-2 border-bottom pointer"><i class="fas fa-ellipsis-h fa-2x"></i></div>
         <div id="menu" class="d-none d-md-block">
             <ul id="navBar" class="nav no-gutters pt-2 pb-2">
-                <li class="nav-item col-12 col-md-3 pb-2 pb-sm-0 text-center">
+                <li class="nav-item col-6 col-sm-3 pb-2 pb-sm-0 text-center">
                     <button id="allBtn" class="btn btn-dark nav-btn border-0 text-nowrap">All products</button>
                 </li>    
-                <li class="nav-item col-4 col-md-3 text-center">
+                <li class="nav-item col-6 col-sm-3 text-center">
                     <button id="clothingBtn" class="btn btn-outline-dark nav-btn border-0">Clothing</button>
                 </li>
-                <li class="nav-item col-4 col-md-3 text-center">
+                <li class="nav-item col-6 col-sm-3 text-center">
                     <button id="footwearBtn" class="btn btn-outline-dark nav-btn border-0">Footwear</button>
                 </li>
-                <li class="nav-item col-4 col-md-3 text-center">
+                <li class="nav-item col-6 col-sm-3 text-center">
                     <button id="accessoriesBtn" class="btn btn-outline-dark nav-btn border-0">Accessories</button>
                 </li>
             </ul>
