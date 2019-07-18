@@ -56,12 +56,12 @@ function userInteraction() {
                 let interval = setInterval(function () {
                     let height = document.querySelector('#showProductsBtn').getBoundingClientRect().height;
                     if (height > 0) {
-                        document.querySelector('#showProductsBtn').style.height = `${height-2}px`;
+                        document.querySelector('#showProductsBtn').style.height = `${height-5}px`;
                     } else if (height === 0) {
                         clearInterval(interval);
                         intervalStarted = false;
                     }
-                }, 5);
+                }, 10);
                 intervalStarted = true;
             }
         }
@@ -70,12 +70,12 @@ function userInteraction() {
                 let interval = setInterval(function () {
                     let height = document.querySelector('#showProductsBtn').getBoundingClientRect().height;
                     if (height < initialHeight) {
-                        document.querySelector('#showProductsBtn').style.height = `${height+2}px`;
+                        document.querySelector('#showProductsBtn').style.height = `${height+5}px`;
                     } else if (height === initialHeight) {
                         clearInterval(interval);
                         intervalStarted = false;
                     }
-                }, 5);
+                }, 10);
                 intervalStarted = true;
             }
         }
@@ -164,6 +164,10 @@ function userInteraction() {
 
         }
         //categories
+
+        if (this.id === 'menuBtn') {
+            document.querySelector('#menu').classList.toggle('d-none');
+        }
         if (this.id === 'allBtn') {
             deselectNavBtns();
             deselectSortBtns();
@@ -360,9 +364,12 @@ function renderHeader() {
             </div>
         </div>
         <div id="upBtn" class="d-none bg-white rounded shadow">
-            <button class="btn btn-outline-dark border-0"><i class="fas fa-chevron-up fa-3x"></i></button>
+            <button class="btn btn-outline-dark border-0"><i class="fas fa-chevron-up fa-2x"></i></button>
         </div>    
-        <div id="showProductsBtn" class="pointer text-dark d-flex align-items-center justify-content-center"><i class="fas fa-grip-lines"></i></div>
+        <div id="showProductsBtn" class="pointer text-dark d-flex flex-column align-items-center justify-content-center h-65px">
+        <i class="fas fa-chevron-up pt-2"></i>
+        <span class="pb-3">Show products</span>
+        </div>
         `;
     div.innerHTML = html;
 
@@ -380,25 +387,28 @@ function renderNav() {
     let div = document.createElement('div');
     div.id = 'nav';
     div.className = 'bg-white';
-    let html = `
+    let html = /*html*/`
     <div class="sticky-top bg-white shadow-sm">
-        <ul class="nav no-gutters pt-3 pb-2">
-            <li class="nav-item col-12 col-sm-3 pb-2 pb-sm-0 text-center">
-                <button id="allBtn" class="btn btn-dark nav-btn border-0 text-nowrap">All products</button>
-            </li>    
-            <li class="nav-item col-4 col-sm-3 text-center">
-                <button id="clothingBtn" class="btn btn-outline-dark nav-btn border-0">Clothing</button>
-            </li>
-            <li class="nav-item col-4 col-sm-3 text-center">
-                <button id="footwearBtn" class="btn btn-outline-dark nav-btn border-0">Footwear</button>
-            </li>
-            <li class="nav-item col-4 col-sm-3 text-center">
-                <button id="accessoriesBtn" class="btn btn-outline-dark nav-btn border-0">Accessories</button>
-            </li>
-        </ul>
-        <div id="sortBar" class="border-top border-bottom py-2 d-flex justify-content-center align-items-center justify-content-lg-end pr-lg-4">
-            <div id="sortNameBtn" class="pointer text-secondary">Sort by name <i class="fas fa-arrow-up"></i></div>
-            <div id="sortPriceBtn" class="ml-3 pointer text-secondary">Sort by price <i class="fas fa-arrow-up"></i></div>
+        <div id="menuBtn" class="text-right d-md-none p-2 border-bottom pointer"><i class="fas fa-bars fa-2x" aria-hidden="true"></i></div>
+        <div id="menu" class="d-none d-md-block">
+            <ul id="navBar" class="nav no-gutters pt-2 pb-2">
+                <li class="nav-item col-12 col-md-3 pb-2 pb-sm-0 text-center">
+                    <button id="allBtn" class="btn btn-dark nav-btn border-0 text-nowrap">All products</button>
+                </li>    
+                <li class="nav-item col-4 col-md-3 text-center">
+                    <button id="clothingBtn" class="btn btn-outline-dark nav-btn border-0">Clothing</button>
+                </li>
+                <li class="nav-item col-4 col-md-3 text-center">
+                    <button id="footwearBtn" class="btn btn-outline-dark nav-btn border-0">Footwear</button>
+                </li>
+                <li class="nav-item col-4 col-md-3 text-center">
+                    <button id="accessoriesBtn" class="btn btn-outline-dark nav-btn border-0">Accessories</button>
+                </li>
+            </ul>
+            <div id="sortBar" class="border-top border-bottom py-2 d-flex justify-content-center align-items-center justify-content-lg-end pr-lg-4">
+                <div id="sortNameBtn" class="pointer text-secondary">Sort by name <i class="fas fa-chevron-up" aria-hidden="true"></i></div>
+                <div id="sortPriceBtn" class="ml-3 pointer text-secondary">Sort by price <i class="fas fa-chevron-up" aria-hidden="true"></i></div>
+            </div>
         </div>
     </div>
     `;
@@ -410,6 +420,7 @@ function renderNav() {
     div.querySelector('#accessoriesBtn').addEventListener('click', userInteraction);
     div.querySelector('#sortNameBtn').addEventListener('click', userInteraction);
     div.querySelector('#sortPriceBtn').addEventListener('click', userInteraction);
+    div.querySelector('#menuBtn').addEventListener('click', userInteraction);
 
 
     document.body.appendChild(div);
@@ -445,30 +456,31 @@ function renderProducts() {
     html += /*html*/ `
         </div>
             <hr>
-            <div id="footer" class="d-flex mb-3">
-                <div class="d-flex flex-column flex-grow-1 align-items-start justify-content-center text-secondary ml-3">
-                    <span class="mb-2"><b>CUSTOMER SERVICE</b></span>
-                    <span class="mb-2"><i class="fas fa-phone-alt"></i> <b>0754 700 700</b></span>
-                    <span>Monday-Friday: 10:00 - 17:00</span>
+            <div id="footer" class="d-flex flex-column flex-md-row pb-5">
+            <div class="d-flex flex-column flex-grow-1 align-items-md-start align-items-center justify-content-center text-secondary pb-2 pb-md-3">
+                <span class="mb-2"><b>CUSTOMER SERVICE</b></span>
+                <span class="mb-2"><i class="fas fa-phone-alt" aria-hidden="true"></i> <b>0754 700 700</b></span>
+                <span>Monday-Friday: 10:00 - 17:00</span>
+            </div>
+            <div class="d-flex flex-column flex-grow-1 align-items-center align-items-md-end text-secondary pb-5 pb-md-3">
+                <div>
+                    <a class="mr-3" href="#1">Find a store</a>
+                    <a href="#1">Contact form</a>
                 </div>
-                <div class="d-flex flex-column flex-grow-1 align-items-end text-secondary mr-3">
-                    <div>
-                        <a href="./pages/find_store.html"><b>Find a store</b></a>
-                        <a class="ml-3" href="./pages/contact.html"><b>Contact form</b></a>
-                    </div>
-                    <div class="text-right mt-2">
-                        <span><b>NEWSLETTER</b></span><br>
-                        <small>Do you want to know more about current trends<br> and our latest offers? <b>Subscribe!</b></small><br>
-                        <div class="input-group mt-2">
-                            <input class="form-control border-secondary" type="text">
-                            <div class="input-group-append">
-                                <button class="btn btn-secondary"><i class="far fa-envelope"></i></button>
-                            </div>
+                <div class="text-center text-md-right mt-2">
+                    <span><b>NEWSLETTER</b></span><br>
+                    <small>Do you want to know more about current trends<br> and our latest offers? <b>Subscribe!</b></small><br>
+                    <div class="input-group mt-2">
+                        <input class="form-control border-secondary" type="text">
+                        <div class="input-group-append">
+                            <button class="btn btn-secondary"><i class="far fa-envelope" aria-hidden="true"></i></button>
                         </div>
                     </div>
                 </div>
             </div>
+        </div>
         `;
+
     div.innerHTML = html
 
     let buttons = div.querySelectorAll('.detailsBtn');

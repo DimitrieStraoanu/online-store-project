@@ -14,11 +14,6 @@
     height: 100px;
 }
 
-#showProductsBtn {
-    font-size: 150%;
-    height: 50px;
-}
-
 .thumbnail {
     width: 65px;
     cursor: pointer;
@@ -58,8 +53,7 @@
     position: absolute;
     right: 10px;
     z-index: 1000;
-    top: 50%;
-    transform: translatey(-50%);
+    top: 20px;
 }
 
 .my-absolute-center {
@@ -101,6 +95,10 @@
 
 .rotated {
     transform: rotate(180deg);
+}
+
+.h-65px {
+    height: 65px;
 }
 
 input[type="text"],
