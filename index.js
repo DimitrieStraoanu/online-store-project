@@ -8,7 +8,7 @@ let selectedBtn;
 initCart();
 renderHeader();
 setHeaderHeight();
-initialHeight = document.querySelector('#showProductsBtn').getBoundingClientRect().height;
+getInitialHeight();
 showCartInfo();
 showLoading();
 getProducts()
@@ -51,6 +51,7 @@ function userInteraction() {
         } else {
             document.querySelector('#upBtn').classList.add('d-none');
         }
+
         if (window.pageYOffset > 0) {
             if (!intervalStarted) {
                 let interval = setInterval(function () {
@@ -224,6 +225,10 @@ function setHeaderHeight() {
     });
 }
 
+function getInitialHeight(){
+    initialHeight = document.querySelector('#showProductsBtn').getBoundingClientRect().height;
+}
+
 function selectBtn(that) {
     that.classList.add('btn-dark');
     that.classList.remove('btn-outline-dark');
@@ -366,7 +371,8 @@ function renderHeader() {
         <div id="upBtn" class="d-none bg-white rounded shadow">
             <button class="btn btn-outline-dark border-0"><i class="fas fa-chevron-up fa-2x"></i></button>
         </div>    
-        <div id="showProductsBtn" class="pointer text-dark d-flex flex-column align-items-center justify-content-center h-65px">
+        <div id="showProductsBtn" class="pointer text-dark d-flex flex-column align-items-center justify-content-center h-65px position-relative">
+        <div class="gorilla-glass"></div>
         <i class="fas fa-chevron-up pt-2"></i>
         <span class="pb-3">Show products</span>
         </div>
