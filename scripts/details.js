@@ -33,13 +33,29 @@ getProductDetails()
 function userInteraction(event) {
     if (this.classList.contains('thumbnail')) {
         let div = document.createElement('div');
+        let pic = this.dataset.pic;
+        let pics = product.pics.split(/\s/);
+        let picIndex = pics.indexOf(pic)+1;
         div.className = 'my-fullscreen d-flex align-items-center justify-content-center';
         let html = `
-        <div class="my-h-95 border rounded"><img class="pointer d-block h-100" src="${this.src}"></div>
+        <div class="my-h-95 border rounded position-relative">
+        <div class="my-absolute-top-right pointer px-2">
+            <i class="fas fa-times"></i>
+        </div>
+        <img class="pointer d-block h-100" src="${this.src}">
+        </div>
         `;
         div.innerHTML = html;
-        div.querySelector('div').addEventListener('click', function () {
+        div.querySelector('i').addEventListener('click', function(){
             div.parentElement.removeChild(div);
+        });
+        div.querySelector('div').addEventListener('click', function () {
+            let img = this.querySelector('img');
+            if (picIndex === pics.length) {
+                picIndex = 0;
+            }
+            img.src = `../assets/pics/${key}/${pics[picIndex]}`;
+            picIndex++;
         });
         document.body.appendChild(div);
     }

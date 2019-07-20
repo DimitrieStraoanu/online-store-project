@@ -64,6 +64,13 @@
     transform: translate(-50%, -50%);
 }
 
+.my-absolute-top-right {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    z-index: 1000;
+}
+
 .h70px {
     height: 70px;
 }
@@ -101,18 +108,18 @@
     height: 65px;
 }
 
-.gorilla-glass{
-    position: absolute;
-    top: 0;
-    bottom:0;
-    right:0;
-    left:0;
-    z-index: 1000;
-}
-
 input[type="text"],
 textarea,
 button {
     outline: none;
     box-shadow: none !important;
+}
+
+.no-select {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
 }

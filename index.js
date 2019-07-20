@@ -371,10 +371,9 @@ function renderHeader() {
         <div id="upBtn" class="d-none bg-white rounded shadow">
             <button class="btn btn-outline-dark border-0"><i class="fas fa-chevron-up fa-2x"></i></button>
         </div>    
-        <div id="showProductsBtn" class="pointer text-dark d-flex flex-column align-items-center justify-content-center h-65px position-relative">
-        <div class="gorilla-glass"></div>
+        <div id="showProductsBtn" class="pointer text-dark d-flex flex-column align-items-center justify-content-center h-65px">
         <i class="fas fa-chevron-up pt-2"></i>
-        <span class="pb-3">Show products</span>
+        <span class="pb-3 no-select">Show products</span>
         </div>
         `;
     div.innerHTML = html;
