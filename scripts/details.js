@@ -135,8 +135,8 @@ function confirm() {
     }
     let div = document.createElement('div');
     div.id = 'confirm';
-    div.className = 'my-fixed-centered bg-white text-success border shadow rounded d-flex align-items-center text-center p-4';
-    div.innerHTML = `<i class="far fa-check-circle fa-2x"></i> <span class="ml-3">Product <b>${product.name}</b> added to your cart!</span>`;
+    div.className = 'my-fixed-centered bg-white text-success border shadow rounded d-flex flex-column justify-content-center align-items-center text-center p-4';
+    div.innerHTML = `<i class="far fa-check-circle fa-2x mb-2 text-success"></i><span class="text-success">Product <b class="text-nowrap">${product.name}</b> added to your cart!</span>`;
     document.body.appendChild(div);
     setTimeout(function () {
         div.parentElement.removeChild(div);

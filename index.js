@@ -328,14 +328,14 @@ function confirm(event) {
     let index = event.currentTarget.dataset.index;
     let div = document.createElement('div');
     div.id = 'confirm';
-    div.className = 'my-fixed-centered bg-white text-success border shadow rounded d-flex align-items-center text-center p-4';
+    div.className = 'my-fixed-centered bg-white border shadow rounded d-flex flex-column justify-content-center align-items-center text-center p-4';
     let html = '';
     if (cart[key]) {
-        html = `<span>Product <b>${products[index][1].name}</b> already in cart. Go to cart to add more.</span>`;
+        html = `<span>Product <b class="text-nowrap">${products[index][1].name}</b> already in cart.</span><span>Go to cart to add more.</span>`;
     } else if (!cart[key] && products[index][1].stock > 0) {
-        html = `<i class="far fa-check-circle fa-2x"></i> <span class="ml-3">Product <b>${products[index][1].name}</b> added to your cart!</span>`;
+        html = `<i class="far fa-check-circle fa-2x mb-2 text-success"></i><span class="text-success">Product <b class="text-nowrap">${products[index][1].name}</b> added to your cart!</span>`;
     } else {
-        html = `<i class="fas fa-ban fa-2x text-danger"></i> <span class="text-danger ml-3">Product <b>${products[index][1].name}</b> out of stock!</span>`;
+        html = `<i class="fas fa-ban fa-2x text-danger mb-2"></i> <span class="text-danger">Product <b class="text-nowrap">${products[index][1].name}</b> out of stock!</span>`;
     }
     div.innerHTML = html;
     document.body.appendChild(div);
@@ -470,7 +470,7 @@ function renderProducts() {
             <div class="d-flex flex-column flex-grow-1 align-items-center align-items-md-end text-secondary pb-5 pb-md-3">
                 <div>
                     <a class="mr-3" href="#1">Find a store</a>
-                    <a href="#1">Contact form</a>
+                    <a href="../pages/contact.html">Contact form</a>
                 </div>
                 <div class="text-center text-md-right mt-2">
                     <span><b>NEWSLETTER</b></span><br>
