@@ -300,7 +300,10 @@ function placeOrder() {
                         <div class="alert alert-light p-5 border text-center shadow">
                             <h4 class="mb-3">Thank you!</h4>
                             <hr>
-                            <div class="text-success d-flex align-items-center"><i class="far fa-check-circle fa-2x"></i> <span class="ml-3">Your order was successfully placed.</span></div>
+                            <div class="text-success d-flex flex-column align-items-center">
+                                <i class="far fa-check-circle fa-2x"></i>
+                                <span class="mt-2">Your order was successfully placed.</span>
+                            </div>
                             <button id="storeBtn" class="btn btn-success mt-3">Continue shopping</button>
                         </div>
                         `;
