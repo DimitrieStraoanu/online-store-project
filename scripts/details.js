@@ -4,6 +4,7 @@ let product;
 let cart;
 initCart();
 renderHeader();
+renderFooter();
 showCartInfo();
 showLoading();
 getProductDetails()
@@ -256,7 +257,7 @@ function renderDetails() {
     div.querySelector('#decreaseBtn').addEventListener('click', userInteraction);
     div.querySelector('#storeBtn').addEventListener('click', userInteraction);
 
-    document.body.appendChild(div);
+    document.body.insertBefore(div,document.body.lastElementChild);
 }
 
 function renderHeader() {
@@ -344,4 +345,36 @@ function renderThumbnails() {
         element.addEventListener('click', userInteraction);
     });
     document.querySelector('#thumbnails').appendChild(div);
+}
+
+function renderFooter() {
+    let div = document.createElement('div');
+    div.className = 'px-4 mt-5';
+    let html = /*html*/ `
+        <hr>
+        <div id="footer" class="d-flex flex-column flex-md-row">
+        <div class="d-flex flex-column flex-grow-1 align-items-md-start align-items-center justify-content-center text-secondary pb-2 pb-md-3">
+            <span class="mb-2"><b>CUSTOMER SERVICE</b></span>
+            <span class="mb-2"><i class="fas fa-phone-alt" aria-hidden="true"></i> <b>0754 700 700</b></span>
+            <span>Monday-Friday: 10:00 - 17:00</span>
+        </div>
+        <div class="d-flex flex-column flex-grow-1 align-items-center align-items-md-end text-secondary pb-5 pb-md-3">
+            <div>
+                <a class="mr-3" href="#1">Find a store</a>
+                <a href="./contact.html">Contact form</a>
+            </div>
+            <div class="text-center text-md-right mt-2">
+                <span><b>NEWSLETTER</b></span><br>
+                <small>Do you want to know more about current trends<br> and our latest offers? <b>Subscribe!</b></small><br>
+                <div class="input-group mt-2">
+                    <input class="form-control border-secondary" type="text">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary"><i class="far fa-envelope" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+    div.innerHTML = html;
+    document.body.appendChild(div);
 }

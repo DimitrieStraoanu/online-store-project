@@ -2,6 +2,8 @@ let cart;
 let products;
 initCart();
 renderHeader();
+renderFooter();
+
 if (Object.keys(cart).length > 0) {
     showLoading();
     getProducts()
@@ -27,6 +29,7 @@ if (Object.keys(cart).length > 0) {
     showCartInfo();
     renderCart();
 }
+
 
 function userInteraction(event) {
 
@@ -77,6 +80,7 @@ function userInteraction(event) {
         localStorage.setItem('cart', JSON.stringify(cart));
         showCartInfo();
         renderCart();
+        
     }
 }
 
@@ -142,65 +146,52 @@ function renderCart() {
         let totalPrice = 0;
         let div = document.createElement('div');
         div.id = 'cartProducts';
-        let html = `
-        <div class="col-12 col-lg-8 flex-column mx-auto p-0">
-        <table class="table m-0 mt-5 text-center">
-        <thead>
-            <tr>
-                <th class="border-0">Product</th>
-                <th class="border-0">Price</th>
-                <th class="border-0 d-none d-lg-table-cell">Stock</th>
-                <th class="border-0">Qty</th>
-                <th class="border-0 d-none d-md-table-cell">Subtotal</th>
-                <th class="border-0"></th>
-            </tr>
-        </thead>
-        <tbody>
+        let html = /*html*/ `
+        <div class="col-12 col-lg-8 flex-column mx-auto p-0 my-5">
         `;
         for (let key in cart) {
             let subtotal = cart[key].price * cart[key].qty;
-            html += `
-                <tr>
-                    <th class="align-middle">
-                        <div class="d-flex flex-column justify-content-center align-items-center">
-                            <a href="../pages/details.html?key=${key}">${cart[key].name}</a><img class="thumbnail rounded border" src="../assets/pics/${key}/${products[key].pics.split(/\s+/)[0]}">
+            html += /*html*/ `
+                <div class="d-flex p-3 align-items-end align-items-md-center border-bottom">
+                    <div class="rounded border align-self-center">
+                        <img class="lg-thumbnail" src="../assets/pics/${key}/${products[key].pics.split(/\s+/)[0]}">
+                    </div>
+                    <div class="row no-gutters flex-grow-1 ml-3">
+                        <div class="col-12 col-md-6 d-flex flex-column text-center">
+                            <a class="font-weight-bold" href="../pages/details.html?key=${key}">${cart[key].name}</a>
+                            <span>Price: ${cart[key].price} euro</span>
+                            <span class="d-none d-md-inline">Stock: ${cart[key].stock} pcs</span>
+                            <span class="font-weight-bold">Subtotal: ${subtotal} euro</span>
                         </div>
-                    </th>
-                    <td class="align-middle">${cart[key].price} euro</td>
-                    <td class="d-none d-lg-table-cell align-middle">${cart[key].stock} pcs</td>
-                    <td class="align-middle">
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <button class="decreaseBtn btn btn-dark font-weight-bold"  data-key = "${key}">-</button>
-                            </div>
-                            <input class="qtyInput form-control text-center" type="text" value="${cart[key].qty}" disabled>
-                            <div class="input-group-append">
-                                <button class="increaseBtn btn btn-dark font-weight-bold"  data-key = "${key}">+</button>
+                        <div class="col-12 col-md-6 d-flex align-items-center pt-2 pt-md-0">
+                            <div class="input-group">
+                                <div class="input-group-prepend">
+                                    <button class="decreaseBtn btn btn-dark font-weight-bold"  data-key = "${key}">-</button>
+                                </div>
+                                <input class="qtyInput form-control text-center" type="text" value="${cart[key].qty}" disabled>
+                                <div class="input-group-append">
+                                    <button class="increaseBtn btn btn-dark font-weight-bold"  data-key = "${key}">+</button>
+                                </div>
                             </div>
                         </div>
-                    </td>
-                    <td class="d-none d-md-table-cell align-middle">${subtotal} euro</td>
-                    <td class="align-middle">
-                        <button data-key = "${key}" class ="removeBtn btn btn-danger text-nowrap">
-                            <span class="d-none d-md-inline">Remove</span>
-                            <i class="fas fa-trash-alt"></i>
-                        </button>
-                    </td>
-                </tr>    
-            `;
+                    </div>
+                    <button data-key = "${key}" class ="removeBtn btn btn-danger text-nowrap ml-2">
+                    <span class="d-none d-md-inline">Remove</span>
+                    <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+                `;
             totalProducts += cart[key].qty;
             totalPrice += subtotal;
         }
-        html += `
-        </tbody>
-        </table>
+        html += /*html*/`
         <div class="cartDetails d-flex flex-column text-center my-3">
-        <p>Products in cart: ${totalProducts}</p>
-        <p>Taxes: 0 %</p>
-        <p>Shipping: 0 euro</p>
-        <p><b>Total price: ${totalPrice} euro</b></p>
-        <button id="storeBtn" class="btn btn-success mx-3 mb-1">Continue shopping</button>
-        <button id="orderBtn" class="btn btn-dark mx-3">Place order <i class="fas fa-credit-card ml-2"></i></button>
+        <span>Products in cart: ${totalProducts}</span>
+        <span>Taxes: 0 %</span>
+        <span>Shipping: 0 euro</span>
+        <span><b>Total price: ${totalPrice} euro</b></span>
+        <button id="storeBtn" class="btn btn-success mx-3 mt-3">Continue shopping</button>
+        <button id="orderBtn" class="btn btn-dark mx-3 mt-1">Place order <i class="fas fa-credit-card ml-2"></i></button>
 
         </div>
         </div>
@@ -219,12 +210,12 @@ function renderCart() {
             element.addEventListener('click', userInteraction);
         });
 
-        document.body.appendChild(div);
+        document.body.insertBefore(div, document.body.lastChild);
     } else {
         let div = document.createElement('div');
-        div.className = "my-fullscreen";
+        div.className = "d-flex";
         div.innerHTML = `
-        <div class="my-fixed-centered bg-white text-center border shadow rounded p-5">
+        <div class="bg-white text-center border shadow rounded p-5 mx-auto my-5">
         <p>Shopping cart is empty!</p>
         <button id="storeBtn" class="btn btn-success mt-3 text-nowrap">Continue shopping</button>
         </div>
@@ -232,7 +223,7 @@ function renderCart() {
 
         div.querySelector('#storeBtn').addEventListener('click', userInteraction);
 
-        document.body.appendChild(div);
+        document.body.insertBefore(div, document.body.lastElementChild);
     }
 }
 
@@ -363,5 +354,37 @@ function renderHeader() {
     div.querySelector('#cartBtn').addEventListener('click', userInteraction);
     div.querySelector('#adminBtn').addEventListener('click', userInteraction);
 
+    document.body.appendChild(div);
+}
+
+function renderFooter() {
+    let div = document.createElement('div');
+    div.className = 'px-4';
+    let html = /*html*/ `
+        <hr>
+        <div id="footer" class="d-flex flex-column flex-md-row">
+        <div class="d-flex flex-column flex-grow-1 align-items-md-start align-items-center justify-content-center text-secondary pb-2 pb-md-3">
+            <span class="mb-2"><b>CUSTOMER SERVICE</b></span>
+            <span class="mb-2"><i class="fas fa-phone-alt" aria-hidden="true"></i> <b>0754 700 700</b></span>
+            <span>Monday-Friday: 10:00 - 17:00</span>
+        </div>
+        <div class="d-flex flex-column flex-grow-1 align-items-center align-items-md-end text-secondary pb-5 pb-md-3">
+            <div>
+                <a class="mr-3" href="#1">Find a store</a>
+                <a href="./contact.html">Contact form</a>
+            </div>
+            <div class="text-center text-md-right mt-2">
+                <span><b>NEWSLETTER</b></span><br>
+                <small>Do you want to know more about current trends<br> and our latest offers? <b>Subscribe!</b></small><br>
+                <div class="input-group mt-2">
+                    <input class="form-control border-secondary" type="text">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary"><i class="far fa-envelope" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+    div.innerHTML = html;
     document.body.appendChild(div);
 }
