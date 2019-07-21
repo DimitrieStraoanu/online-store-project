@@ -49,8 +49,10 @@ function renderContactForm() {
     div.innerHTML = html;
     document.body.appendChild(div);
 }
+
 function renderFooter() {
     let div = document.createElement('div');
+    div.id = 'footer';
     div.className = 'px-4';
     let html = /*html*/ `
         <hr>

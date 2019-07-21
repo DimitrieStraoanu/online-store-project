@@ -459,9 +459,9 @@ function renderProducts() {
         `;
     }
     html += /*html*/ `
-        </div>
+        </div id='footer'>
             <hr>
-            <div id="footer" class="d-flex flex-column flex-md-row pb-5">
+            <div class="d-flex flex-column flex-md-row pb-5">
             <div class="d-flex flex-column flex-grow-1 align-items-md-start align-items-center justify-content-center text-secondary pb-2 pb-md-3">
                 <span class="mb-2"><b>CUSTOMER SERVICE</b></span>
                 <span class="mb-2"><i class="fas fa-phone-alt" aria-hidden="true"></i> <b>0754 700 700</b></span>

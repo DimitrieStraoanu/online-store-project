@@ -36,7 +36,7 @@ function userInteraction(event) {
         let div = document.createElement('div');
         let pic = this.dataset.pic;
         let pics = product.pics.split(/\s/);
-        let picIndex = pics.indexOf(pic)+1;
+        let picIndex = pics.indexOf(pic) + 1;
         div.className = 'my-fullscreen d-flex align-items-center justify-content-center';
         let html = `
         <div class="my-h-95 border rounded position-relative">
@@ -47,7 +47,7 @@ function userInteraction(event) {
         </div>
         `;
         div.innerHTML = html;
-        div.querySelector('#xBtn').addEventListener('click', function(){
+        div.querySelector('#xBtn').addEventListener('click', function () {
             div.parentElement.removeChild(div);
         });
         div.querySelector('div').addEventListener('click', function () {
@@ -197,7 +197,7 @@ function renderDetails() {
     div = document.createElement('div');
     div.id = 'details';
     div.className = 'container p-0 pt-4 pt-lg-5 position-relative';
-    let html = /*html*/`
+    let html = /*html*/ `
     <div class="row no-gutters justify-content-center align-items-stretch">
         <div class="col-12 col-md-6 col-xl-5 d-flex">
             <div id="thumbnails" class="d-none d-lg-block"></div>    
@@ -257,7 +257,7 @@ function renderDetails() {
     div.querySelector('#decreaseBtn').addEventListener('click', userInteraction);
     div.querySelector('#storeBtn').addEventListener('click', userInteraction);
 
-    document.body.insertBefore(div,document.body.lastElementChild);
+    document.body.insertBefore(div, document.querySelector('#footer'));
 }
 
 function renderHeader() {
@@ -349,10 +349,11 @@ function renderThumbnails() {
 
 function renderFooter() {
     let div = document.createElement('div');
+    div.id = 'footer';
     div.className = 'px-4 mt-5';
     let html = /*html*/ `
         <hr>
-        <div id="footer" class="d-flex flex-column flex-md-row">
+        <div class="d-flex flex-column flex-md-row">
         <div class="d-flex flex-column flex-grow-1 align-items-md-start align-items-center justify-content-center text-secondary pb-2 pb-md-3">
             <span class="mb-2"><b>CUSTOMER SERVICE</b></span>
             <span class="mb-2"><i class="fas fa-phone-alt" aria-hidden="true"></i> <b>0754 700 700</b></span>

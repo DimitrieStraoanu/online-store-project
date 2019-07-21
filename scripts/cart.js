@@ -21,6 +21,7 @@ if (Object.keys(cart).length > 0) {
             if (!updateCart()) {
                 renderCart();
             }
+
         })
         .catch(function (err) {
             console.log(err)
@@ -43,6 +44,7 @@ function userInteraction(event) {
         location.assign('./admin.html');
     }
     if (this.id === 'closeBtn') {
+        showCartInfo();
         renderCart();
         let cartUpdateInfo = document.querySelector('#cartUpdateInfo');
         cartUpdateInfo.parentElement.removeChild(cartUpdateInfo);
@@ -80,7 +82,7 @@ function userInteraction(event) {
         localStorage.setItem('cart', JSON.stringify(cart));
         showCartInfo();
         renderCart();
-        
+
     }
 }
 
@@ -184,7 +186,7 @@ function renderCart() {
             totalProducts += cart[key].qty;
             totalPrice += subtotal;
         }
-        html += /*html*/`
+        html += /*html*/ `
         <div class="cartDetails d-flex flex-column text-center my-3">
         <span>Products in cart: ${totalProducts}</span>
         <span>Taxes: 0 %</span>
@@ -210,7 +212,7 @@ function renderCart() {
             element.addEventListener('click', userInteraction);
         });
 
-        document.body.insertBefore(div, document.body.lastChild);
+        document.body.insertBefore(div, document.querySelector('#footer'));
     } else {
         let div = document.createElement('div');
         div.className = "d-flex";
@@ -223,7 +225,7 @@ function renderCart() {
 
         div.querySelector('#storeBtn').addEventListener('click', userInteraction);
 
-        document.body.insertBefore(div, document.body.lastElementChild);
+        document.body.insertBefore(div, document.querySelector('#footer'));
     }
 }
 
@@ -362,10 +364,11 @@ function renderHeader() {
 
 function renderFooter() {
     let div = document.createElement('div');
+    div.id = 'footer';
     div.className = 'px-4';
     let html = /*html*/ `
         <hr>
-        <div id="footer" class="d-flex flex-column flex-md-row">
+        <div class="d-flex flex-column flex-md-row">
         <div class="d-flex flex-column flex-grow-1 align-items-md-start align-items-center justify-content-center text-secondary pb-2 pb-md-3">
             <span class="mb-2"><b>CUSTOMER SERVICE</b></span>
             <span class="mb-2"><i class="fas fa-phone-alt" aria-hidden="true"></i> <b>0754 700 700</b></span>
