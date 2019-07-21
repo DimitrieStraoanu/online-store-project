@@ -39,14 +39,14 @@ function userInteraction(event) {
         div.className = 'my-fullscreen d-flex align-items-center justify-content-center';
         let html = `
         <div class="my-h-95 border rounded position-relative">
-        <div class="my-absolute-top-right pointer px-2">
+        <div id="xBtn" class="my-absolute-top-right pointer px-2">
             <i class="fas fa-times"></i>
         </div>
         <img class="pointer d-block h-100" src="${this.src}">
         </div>
         `;
         div.innerHTML = html;
-        div.querySelector('i').addEventListener('click', function(){
+        div.querySelector('#xBtn').addEventListener('click', function(){
             div.parentElement.removeChild(div);
         });
         div.querySelector('div').addEventListener('click', function () {
@@ -196,7 +196,7 @@ function renderDetails() {
     div = document.createElement('div');
     div.id = 'details';
     div.className = 'container p-0 pt-4 pt-lg-5 position-relative';
-    let html = `
+    let html = /*html*/`
     <div class="row no-gutters justify-content-center align-items-stretch">
         <div class="col-12 col-md-6 col-xl-5 d-flex">
             <div id="thumbnails" class="d-none d-lg-block"></div>    
@@ -336,7 +336,7 @@ function renderThumbnails() {
     div.className = 'd-flex flex-column';
     let html = `
     ${product.pics.split(/\s+/).map(function(pic){
-        return `<div class="border rounded mb-4"><img data-pic="${pic}" class="thumbnail d-block" src="../assets/pics/${key}/${pic}"></div>`;
+        return `<div class="border rounded mb-4"><img data-pic="${pic}" class="thumbnail d-block pointer" src="../assets/pics/${key}/${pic}"></div>`;
     }).join('')}
     `;
     div.innerHTML = html;

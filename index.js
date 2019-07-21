@@ -470,7 +470,7 @@ function renderProducts() {
             <div class="d-flex flex-column flex-grow-1 align-items-center align-items-md-end text-secondary pb-5 pb-md-3">
                 <div>
                     <a class="mr-3" href="#1">Find a store</a>
-                    <a href="../pages/contact.html">Contact form</a>
+                    <a href="./pages/contact.html">Contact form</a>
                 </div>
                 <div class="text-center text-md-right mt-2">
                     <span><b>NEWSLETTER</b></span><br>

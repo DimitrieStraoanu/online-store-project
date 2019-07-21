@@ -161,10 +161,14 @@ function renderCart() {
             let subtotal = cart[key].price * cart[key].qty;
             html += `
                 <tr>
-                    <th><a href="../pages/details.html?key=${key}">${cart[key].name}</a></th>
-                    <td>${cart[key].price} euro</td>
-                    <td class="d-none d-lg-table-cell">${cart[key].stock} pcs</td>
-                    <td>
+                    <th class="align-middle">
+                        <div class="d-flex flex-column justify-content-center align-items-center">
+                            <a href="../pages/details.html?key=${key}">${cart[key].name}</a><img class="thumbnail rounded border" src="../assets/pics/${key}/${products[key].pics.split(/\s+/)[0]}">
+                        </div>
+                    </th>
+                    <td class="align-middle">${cart[key].price} euro</td>
+                    <td class="d-none d-lg-table-cell align-middle">${cart[key].stock} pcs</td>
+                    <td class="align-middle">
                         <div class="input-group">
                             <div class="input-group-prepend">
                                 <button class="decreaseBtn btn btn-dark font-weight-bold"  data-key = "${key}">-</button>
@@ -175,8 +179,8 @@ function renderCart() {
                             </div>
                         </div>
                     </td>
-                    <td class="d-none d-md-table-cell">${subtotal} euro</td>
-                    <td>
+                    <td class="d-none d-md-table-cell align-middle">${subtotal} euro</td>
+                    <td class="align-middle">
                         <button data-key = "${key}" class ="removeBtn btn btn-danger text-nowrap">
                             <span class="d-none d-md-inline">Remove</span>
                             <i class="fas fa-trash-alt"></i>

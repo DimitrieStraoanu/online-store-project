@@ -3,9 +3,24 @@ initCart();
 renderHeader();
 showCartInfo();
 renderContactForm();
+renderFooter();
 
 function userInteraction() {
-    //...
+    if (this.id === 'storeBtn' || this.id === 'logo') {
+        location.assign('../index.html');
+    }
+    if (this.id === 'cartBtn') {
+        location.assign('./cart.html');
+    }
+    if (this.id === 'adminBtn') {
+        location.assign('./admin.html');
+    }
+    if (this.id === 'searchBtn') {
+        let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
+        if (searchString) {
+            location.assign(`../index.html?search=${searchString}`);
+        }
+    }
 }
 
 function renderContactForm() {
@@ -27,10 +42,41 @@ function renderContactForm() {
             <textarea  rows="5" class="form-control" id="text" placeholder="Enter message"></textarea>
         </div>    
         <div class="text-center d-flex">
-            <button type="submit" class="btn btn-dark flex-grow-1">Submit</button>
+            <button class="btn btn-success flex-grow-1">Send message</button>
         </div>
     </div>
     `;
+    div.innerHTML = html;
+    document.body.appendChild(div);
+}
+function renderFooter() {
+    let div = document.createElement('div');
+    div.className = 'px-4';
+    let html = /*html*/ `
+        <hr>
+        <div id="footer" class="d-flex flex-column flex-md-row pb-5">
+        <div class="d-flex flex-column flex-grow-1 align-items-md-start align-items-center justify-content-center text-secondary pb-2 pb-md-3">
+            <span class="mb-2"><b>CUSTOMER SERVICE</b></span>
+            <span class="mb-2"><i class="fas fa-phone-alt" aria-hidden="true"></i> <b>0754 700 700</b></span>
+            <span>Monday-Friday: 10:00 - 17:00</span>
+        </div>
+        <div class="d-flex flex-column flex-grow-1 align-items-center align-items-md-end text-secondary pb-5 pb-md-3">
+            <div>
+                <a class="mr-3" href="#1">Find a store</a>
+                <a href="./contact.html">Contact form</a>
+            </div>
+            <div class="text-center text-md-right mt-2">
+                <span><b>NEWSLETTER</b></span><br>
+                <small>Do you want to know more about current trends<br> and our latest offers? <b>Subscribe!</b></small><br>
+                <div class="input-group mt-2">
+                    <input class="form-control border-secondary" type="text">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary"><i class="far fa-envelope" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
     div.innerHTML = html;
     document.body.appendChild(div);
 }
