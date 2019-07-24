@@ -350,7 +350,7 @@ function renderThumbnails() {
 function renderFooter() {
     let div = document.createElement('div');
     div.id = 'footer';
-    div.className = 'px-4 mt-5';
+    div.className = 'px-4 pt-5 pb-2 ';
     let html = /*html*/ `
         <hr>
         <div class="d-flex flex-column flex-md-row">
@@ -361,7 +361,6 @@ function renderFooter() {
         </div>
         <div class="d-flex flex-column flex-grow-1 align-items-center align-items-md-end text-secondary pb-5 pb-md-3">
             <div>
-                <a class="mr-3" href="#1">Find a store</a>
                 <a href="./contact.html">Contact form</a>
             </div>
             <div class="text-center text-md-right mt-2">

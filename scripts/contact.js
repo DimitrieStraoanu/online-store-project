@@ -15,12 +15,52 @@ function userInteraction() {
     if (this.id === 'adminBtn') {
         location.assign('./admin.html');
     }
+    if (this.id === 'sendBtn') {
+        let msg = checkForMsg();
+        if (msg) {
+            sendMsg(msg)
+                .then(function () {
+                    confirm();
+                });
+        }
+    }
     if (this.id === 'searchBtn') {
         let searchString = document.querySelector('#searchInput').value.toLowerCase().trim();
         if (searchString) {
             location.assign(`../index.html?search=${searchString}`);
         }
     }
+}
+
+function confirm() {
+    let div = document.createElement('div');
+    div.className = "d-flex my-fullscreen align-items-center justify-content-center";
+    div.innerHTML = `
+        <div class="bg-white text-center border shadow rounded p-5">
+        <p>Message sent. Thank you!</p>
+        <button id="storeBtn" class="btn btn-success mt-3 text-nowrap">Continue shopping</button>
+        </div>
+        `;
+
+    div.querySelector('#storeBtn').addEventListener('click', userInteraction);
+
+    document.body.appendChild(div);
+}
+
+function checkForMsg() {
+    let name = document.querySelector('#name').value.trim();
+    let email = document.querySelector('#email').value.trim();
+    let message = document.querySelector('#message').value.trim();
+    if (name && email && message) {
+        return {
+            name,
+            email,
+            message
+        };
+    } else {
+        return null;
+    }
+
 }
 
 function renderContactForm() {
@@ -39,24 +79,25 @@ function renderContactForm() {
         </div>
         <div class="form-group">
             <label for="text">Message</label>
-            <textarea  rows="5" class="form-control" id="text" placeholder="Enter message"></textarea>
+            <textarea  rows="5" class="form-control" id="message" placeholder="Enter message"></textarea>
         </div>    
         <div class="text-center d-flex">
-            <button class="btn btn-success flex-grow-1">Send message</button>
+            <button id="sendBtn" class="btn btn-success flex-grow-1">Send message</button>
         </div>
     </div>
     `;
     div.innerHTML = html;
+    div.querySelector('#sendBtn').addEventListener('click', userInteraction);
     document.body.appendChild(div);
 }
 
 function renderFooter() {
     let div = document.createElement('div');
     div.id = 'footer';
-    div.className = 'px-4';
+    div.className = 'px-4 pt-5 pb-2';
     let html = /*html*/ `
         <hr>
-        <div id="footer" class="d-flex flex-column flex-md-row pb-5">
+        <div class="d-flex flex-column flex-md-row">
         <div class="d-flex flex-column flex-grow-1 align-items-md-start align-items-center justify-content-center text-secondary pb-2 pb-md-3">
             <span class="mb-2"><b>CUSTOMER SERVICE</b></span>
             <span class="mb-2"><i class="fas fa-phone-alt" aria-hidden="true"></i> <b>0754 700 700</b></span>
@@ -64,7 +105,6 @@ function renderFooter() {
         </div>
         <div class="d-flex flex-column flex-grow-1 align-items-center align-items-md-end text-secondary pb-5 pb-md-3">
             <div>
-                <a class="mr-3" href="#1">Find a store</a>
                 <a href="./contact.html">Contact form</a>
             </div>
             <div class="text-center text-md-right mt-2">
@@ -134,4 +174,11 @@ function showCartInfo() {
         }
         document.getElementById('cartItems').innerHTML = items;
     }
+}
+
+function sendMsg(msg) {
+    return fetch('https://my-online-store-2bdc4.firebaseio.com/messages/.json', {
+        method: 'POST',
+        body: JSON.stringify(msg)
+    });
 }

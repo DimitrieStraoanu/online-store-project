@@ -18,10 +18,8 @@ if (Object.keys(cart).length > 0) {
             clearLoading();
             syncCart();
             showCartInfo();
-            if (!updateCart()) {
-                renderCart();
-            }
-
+            updateCart();
+            renderCart();
         })
         .catch(function (err) {
             console.log(err)
@@ -149,7 +147,7 @@ function renderCart() {
         let div = document.createElement('div');
         div.id = 'cartProducts';
         let html = /*html*/ `
-        <div class="col-12 col-lg-8 flex-column mx-auto p-0 my-5">
+        <div class="col-12 col-lg-8 flex-column mx-auto p-0 mt-5">
         `;
         for (let key in cart) {
             let subtotal = cart[key].price * cart[key].qty;
@@ -365,7 +363,7 @@ function renderHeader() {
 function renderFooter() {
     let div = document.createElement('div');
     div.id = 'footer';
-    div.className = 'px-4';
+    div.className = 'px-4 pt-5 pb-2';
     let html = /*html*/ `
         <hr>
         <div class="d-flex flex-column flex-md-row">
@@ -376,7 +374,6 @@ function renderFooter() {
         </div>
         <div class="d-flex flex-column flex-grow-1 align-items-center align-items-md-end text-secondary pb-5 pb-md-3">
             <div>
-                <a class="mr-3" href="#1">Find a store</a>
                 <a href="./contact.html">Contact form</a>
             </div>
             <div class="text-center text-md-right mt-2">
